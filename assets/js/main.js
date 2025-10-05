@@ -1,13 +1,21 @@
-document.addEventListener("DOMContentLoaded", () => {
-  // --- INIT: Globale Features ---
-  initCurrentYear();
-  initGSAPDetails();
-  initHorizontalSlider();
-  initFABScrollShow();
-  initCUSlider();
-  initTimer();
-  initGlobalNav();
-});
+(function () {
+  const init = () => {
+    initCurrentYear();
+    initGSAPDetails();
+    initHorizontalSlider();
+    initFABScrollShow();
+    initCUSlider();
+    initTimer();
+    initGlobalNav();
+  };
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init, { once: true });
+  } else {
+    init(); // DOM schon fertig -> direkt starten
+  }
+})();
+
 // Slider-Horizontal
 
 function initHorizontalSlider() {
