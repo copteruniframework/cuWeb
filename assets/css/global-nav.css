@@ -16,7 +16,7 @@
 }
 
 .g_nav {
-    height: var(--nav-height);
+    height: var(--global-nav--height);
     max-width: 90rem;
     width: 100%;
     display: flex;
@@ -77,7 +77,7 @@
         display: none;
         background-color: rgba(22, 22, 23);
         position: absolute;
-        height: calc(100vh - var(--nav-height));
+        height: calc(100vh - var(--global-nav--height));
         top: 100%;
         left: 0;
         right: 0;
