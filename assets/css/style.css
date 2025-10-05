@@ -1,0 +1,181 @@
+  * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  p,
+  li {
+      margin: 0;
+  }
+
+  section,
+  header,
+  footer {
+      position: relative;
+  }
+
+  button {
+      background-color: unset;
+      text-align: inherit;
+  }
+
+  button:not(:disabled) {
+      cursor: pointer;
+  }
+
+  /* details>div:first-of-type {
+      overflow-y: clip;
+  } */
+
+  /* details[open]>div:first-of-type {
+      overflow-y: visible;
+  } */
+
+  summary {
+      cursor: pointer;
+  }
+
+  details summary .summary_icon {
+      transform-style: preserve-3d;
+      transition: transform 0.3s ease;
+  }
+
+  details[open] summary .summary_icon {
+      transform: rotateX(180deg);
+  }
+
+  summary::-webkit-details-marker,
+  summary::marker {
+      display: none;
+  }
+
+  *[tabindex]:focus-visible,
+  input[type="file"]:focus-visible {
+      outline: 0.125em solid #4d65ff;
+      outline-offset: 0.125em;
+  }
+
+  .u-container-medium,
+  .u-container-small,
+  .u-container-large {
+      margin-right: auto !important;
+      margin-left: auto !important;
+  }
+
+  .w-richtext> :not(div):first-child,
+  .w-richtext>div:first-child> :first-child {
+      margin-top: 0 !important;
+  }
+
+  .w-richtext>:last-child,
+  .w-richtext ol li:last-child,
+  .w-richtext ul li:last-child {
+      margin-bottom: 0 !important;
+  }
+
+  /* .u-stack-p p {
+  margin: 0;  alle Standard-Margins entfernen 
+  }*/
+  :lang(de) .u-text-style-hyphens {
+      hyphens: auto;
+  }
+
+  :lang(en) .u-text-style-hyphens {
+      hyphens: none;
+  }
+
+  .u-stack-p p+p {
+      margin-top: 1.1rem;
+  }
+
+  .u-text-style-2lines,
+  .u-text-style-3lines,
+  .u-text-style-10lines {
+      display: -webkit-box;
+      overflow: hidden;
+      -webkit-box-orient: vertical;
+  }
+
+  .u-text-style-2lines {
+      -webkit-line-clamp: 2;
+      line-clamp: 2;
+  }
+
+  .u-text-style-3lines {
+      -webkit-line-clamp: 3;
+      line-clamp: 3;
+  }
+
+  .u-text-style-10lines {
+      -webkit-line-clamp: 10;
+      line-clamp: 10;
+  }
+
+  .u-margin-trim> :first-child,
+  .u-margin-trim> :not(:not(.w-condition-invisible) ~ :not(.w-condition-invisible)) {
+      margin-top: 0;
+  }
+
+  .u-margin-trim> :last-child,
+  .u-margin-trim> :not(:has(~ :not(.w-condition-invisible))) {
+      margin-bottom: 0;
+  }
+
+  .is-hyphens {
+      overflow-wrap: break-word;
+      /* Korrekte Alternative für word-break */
+      -webkit-hyphens: auto;
+      /* Safari */
+      -moz-hyphens: auto;
+      /* Ältere Firefox-Versionen */
+      hyphens: auto;
+      /* Standard */
+  }
+
+  .visuallyhidden {
+      position: absolute;
+      clip: rect(1px, 1px, 1px, 1px);
+      clip-path: inset(0px 0px 99.9% 99.9%);
+      overflow: hidden;
+      width: 1px;
+      height: 1px;
+      border: 0;
+      padding: 0;
+  }
+
+  .u-hflex-left-stretch>*:first-child .u-icon-1x1-small,
+  .u-hflex-left-stretch>.u-icon-1x1-small:first-child {
+      flex: none;
+  }
+
+  .u-flex-basis-30ch,
+  .u-flex-basis-30ch> :first-child {
+      flex: 0 1 30ch;
+  }
+
+  .u-flex-basis-40ch,
+  .u-flex-basis-40ch>* {
+      flex: 0 1 40ch;
+  }
+
+  .pointer-events-off {
+      pointer-events: none;
+  }
+
+  .pointer-events-on {
+      pointer-events: auto;
+  }
+
+  @supports (-webkit-appearance: none) {
+      .u-transform-z {
+          transform: translate3d(0px, 0px, 0px);
+          transform-style: preserve-3d;
+      }
+  }
