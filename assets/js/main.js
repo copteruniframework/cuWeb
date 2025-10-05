@@ -364,10 +364,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const mm = gsap.matchMedia();
 
   mm.add('(max-width: 1024px)', () => {
-    // Falls du die Tab-Reihenfolge exakt nach dem Button willst:
-    // const moveAfterButton = () => btn.insertAdjacentElement('afterend', menu);
-    // const restoreOriginal = () => placeholder.parentNode.insertBefore(menu, placeholder);
-
     const moveAfterButton = () => nav.insertAdjacentElement('beforeend', menu);
     const restoreOriginal = () => placeholder.parentNode.insertBefore(menu, placeholder);
 
@@ -375,22 +371,19 @@ document.addEventListener('DOMContentLoaded', () => {
       paused: true,
       defaults: { duration: 0.30, ease: 'power2.out', immediateRender: false },
       onStart() {
-        lockScroll();                 // <<< Klasse setzen
+        lockScroll();
         moveAfterButton();
         btn.setAttribute('aria-expanded', 'true');
       },
       onReverseComplete() {
-        unlockScroll();               // <<< Klasse entfernen
-        gsap.set(menu, { display: 'none' });
+        unlockScroll();
+        gsap.set(menu, { clearProps: 'all' });
         gsap.set(items, { clearProps: 'all' });
         btn.setAttribute('aria-expanded', 'false');
         restoreOriginal();
-        // anim.-Styles am Menü optional bereinigen (display separat lassen)
-        gsap.set(menu, { clearProps: 'transform,opacity,yPercent,height,overflow' });
       }
     });
 
-    // Timeline: Menü sichtbar + animieren, Items mit Stagger
     tl.set(menu, { display: 'block' }, 0)
       .fromTo(menu, { yPercent: -100, opacity: 0 }, { yPercent: 0, opacity: 1 }, 0)
       .set(items, { y: -30, opacity: 0 }, 0)
@@ -407,7 +400,6 @@ document.addEventListener('DOMContentLoaded', () => {
     btn.addEventListener('click', onClick);
     document.addEventListener('keydown', onKey);
 
-    // Cleanup beim Verlassen des Breakpoints (≥1024px)
     return () => {
       unlockScroll(); // falls noch aktiv
       btn.removeEventListener('click', onClick);
