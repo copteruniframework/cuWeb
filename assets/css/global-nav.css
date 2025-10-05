@@ -37,7 +37,6 @@
     display: flex;
     justify-content: space-between;
     gap: var(--nav-gap-x);
-    position: relative;
 }
 
 .g_nav_item {
@@ -47,7 +46,9 @@
     align-items: center;
     justify-content: center;
     padding: 4px 12px;
-    color: var(--_brand---tintsshades--brand-500)
+    color: var(--_brand---tintsshades--brand-500);
+    position: relative;
+    z-index: 1;
 }
 
 .g_nav_item:hover {
@@ -80,7 +81,7 @@
         top: 100%;
         left: 0;
         right: 0;
-        padding-top: 32px;        
+        padding-top: 32px;     
     }
 
     .g_nav_menu[open] {
