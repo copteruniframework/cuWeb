@@ -359,7 +359,43 @@ function initTimer() {
     });
   });
 }
-
+/**
+ * Initialisiert die globale Navigation mit responsivem Verhalten.
+ * - Bei kleinen Bildschirmen (max-width: 1024px) wird das Menü in einen mobilen Stil umgewandelt.
+ * - Ein Button toggelt das Menü mit einer Animation (GSAP).
+ * - Scrollen wird beim geöffneten Menü gesperrt.
+ * - Das Menü kann mit Escape oder durch erneutes Klicken auf den Button geschlossen werden.
+ *
+ * Voraussetzungen:
+ * - GSAP v3 muss global verfügbar sein (`window.gsap`).
+ * - HTML-Struktur:
+ *   ```html
+ *   <nav class="g_nav">
+ *     <button id="g_nav_btn_mobile_menu" aria-expanded="false">Menu</button>
+ *     <div class="g_nav_menu">
+ *       <a class="g_nav_item" href="#">Item 1</a>
+ *       <a class="g_nav_item" href="#">Item 2</a>
+ *       ...
+ *     </div>
+ *   </nav>
+ *   ```
+ *
+ * Zugänglichkeit:
+ * - Der Button hat ein `aria-expanded`-Attribut, das den Zustand des Menüs widerspiegelt.
+ * - Das Menü bleibt im DOM und wird nur visuell umpositioniert.
+ *
+ * @returns {void} Kein Rückgabewert.
+ *
+ * @example
+ * // Initialisierung (Projektstil mit DOMContentLoaded)
+ * document.addEventListener('DOMContentLoaded', () => {
+ *   if (!window.gsap) return;
+ *   initGlobalNav();
+ * });
+ *
+ * @since 1.0.0
+ * @see https://gsap.com/docs/v3/
+ */
 function initGlobalNav() {
   const nav = document.querySelector('.g_nav');
   const btn = document.getElementById('g_nav_btn_mobile_menu');
