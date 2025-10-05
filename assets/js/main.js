@@ -164,41 +164,54 @@ function initGSAPDetails() {
       });
     };
 
+    // 1) Backdrop-Klick erkennen (zählt als Klick auf das Content-Element selbst)
+    content.addEventListener('click', (e) => {
+      if (e.target === content && detail.open) {
+        e.stopPropagation(); // (optional) verhindert doppeltes Auslösen über document
+        closeDetails();
+      }
+    });
+
+    // 2) Summary toggelt wie gehabt
     summary.addEventListener('click', e => {
       e.preventDefault();
       if (gsap.isTweening(content)) return;
 
       if (!detail.open) {
         detail.open = true;
-        gsap.fromTo(content, {
-          height: 0,
-          opacity: 0,
-          overflow: 'clip',
-        }, {
-          height: content.scrollHeight,
-          opacity: 1,
-          duration: 0.4,
-          ease: 'power2.out',
-          onComplete: () => {
-            gsap.set(content, { clearProps: "all" });
+        gsap.fromTo(content,
+          { height: 0, opacity: 0, overflow: 'clip' },
+          {
+            height: content.scrollHeight,
+            opacity: 1,
+            duration: 0.4,
+            ease: 'power2.out',
+            onComplete: () => gsap.set(content, { clearProps: "all" })
           }
-        });
+        );
       } else {
         closeDetails();
       }
     });
 
-    // AUTOCLOSE HANDLING
+    // 3) Outside-Click (für alle Fälle)
     if (detail.dataset.autoclose === "true") {
       document.addEventListener('click', (e) => {
-        // Wenn Klick außerhalb des <details>
+        if (!detail.open) return;
+        // Wenn NICHT innerhalb des <details> geklickt → schließen
         if (!detail.contains(e.target)) {
           closeDetails();
         }
       });
     }
+
+    // 4) ESC zum Schließen (Quality-of-Life)
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeDetails();
+    });
   });
 }
+
 
 /**
  * Setzt das **aktuelle Jahr** in alle `<time>`-Elemente mit `datetime="currentYear"`.
