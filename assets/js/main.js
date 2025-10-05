@@ -1,5 +1,16 @@
-// Slider-Horizontal
 document.addEventListener("DOMContentLoaded", () => {
+  // --- INIT: Globale Features ---
+  initCurrentYear();
+  initGSAPDetails();
+  initHorizontalSlider();
+  initFABScrollShow();
+  initCUSlider();
+  initTimer();
+  initGlobalNav();
+});
+// Slider-Horizontal
+
+function initHorizontalSlider() {
   const debounce = (fn, delay = 100) => {
     let t;
     return (...args) => {
@@ -80,7 +91,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     setTimeout(updateButtons, 200); // Initialer Delay für Layout-Stabilität
   });
-});
+}
 
 /**
  * Animiert das Öffnen/Schließen von `<details>`-Elementen mit **GSAP**.
@@ -180,7 +191,6 @@ function initGSAPDetails() {
     }
   });
 }
-initGSAPDetails();
 
 /**
  * Setzt das **aktuelle Jahr** in alle `<time>`-Elemente mit `datetime="currentYear"`.
@@ -217,11 +227,8 @@ function initCurrentYear() {
     el.textContent = currentYear;
   });
 }
-initCurrentYear();
-// GSAP
 
-// hide-show-fab
-document.addEventListener('DOMContentLoaded', () => {
+function initFABScrollShow() {
   gsap.registerPlugin(ScrollTrigger);
 
   document.querySelectorAll('.fab-section-center-bottom').forEach((fabEl) => {
@@ -244,110 +251,108 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     }
   });
-});
+}
 
-document.querySelectorAll('[data-cu-slider="content"]').forEach(contentEl => {
-  const items = Array.from(contentEl.children).filter(el => el.nodeType === 1);
-  if (!items.length) return;
+function initCUSlider() {
+  document.querySelectorAll('[data-cu-slider="content"]').forEach(contentEl => {
+    const items = Array.from(contentEl.children).filter(el => el.nodeType === 1);
+    if (!items.length) return;
 
-  // Buttons im gemeinsamen Wrapper (gleicher <div>-Container)
-  let wrapper = contentEl.parentElement;
-  const hasButtons = el => !!el?.querySelector('[data-cu-slider="btnLeft"], [data-cu-slider="btnRight"]');
-  if (wrapper && !hasButtons(wrapper) && wrapper.parentElement && hasButtons(wrapper.parentElement)) {
-    wrapper = wrapper.parentElement;
-  }
-
-  const btnLeft = wrapper?.querySelector('[data-cu-slider="btnLeft"]') || null;
-  const btnRight = wrapper?.querySelector('[data-cu-slider="btnRight"]') || null;
-  if (!btnLeft && !btnRight) return;
-
-  const clamp = (n, min, max) => Math.max(min, Math.min(max, n));
-
-  const currentIndex = () => {
-    const centerX = contentEl.scrollLeft + contentEl.clientWidth / 2;
-    let best = 0, dist = Infinity;
-    items.forEach((it, i) => {
-      const c = it.offsetLeft + it.offsetWidth / 2;
-      const d = Math.abs(c - centerX);
-      if (d < dist) { dist = d; best = i; }
-    });
-    return best;
-  };
-
-  const goTo = (i) => {
-    i = clamp(i, 0, items.length - 1);
-    items[i].scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
-    requestAnimationFrame(updateButtons);
-    setTimeout(updateButtons, 180);
-  };
-
-  const updateButtons = () => {
-    const i = currentIndex();
-    if (btnLeft) btnLeft.toggleAttribute('disabled', i <= 0);
-    if (btnRight) btnRight.toggleAttribute('disabled', i >= items.length - 1);
-  };
-
-  btnLeft?.addEventListener('click', e => { e.preventDefault(); goTo(currentIndex() - 1); });
-  btnRight?.addEventListener('click', e => { e.preventDefault(); goTo(currentIndex() + 1); });
-
-  contentEl.addEventListener('scroll', updateButtons, { passive: true });
-  window.addEventListener('resize', updateButtons);
-
-  updateButtons();
-});
-
-// Timer
-document.addEventListener('DOMContentLoaded', () => {
-  const els = document.querySelectorAll('[data-cu-counter="timer"]');
-
-  els.forEach((el, i) => {
-    const storageKey = `cu-timer-${i}`;
-    const text = el.textContent.trim();
-    const [mm, ss] = text.split(':').map(Number);
-    const startSeconds = mm * 60 + ss;
-
-    let endTime = localStorage.getItem(storageKey);
-
-    if (!endTime) {
-      endTime = Date.now() + startSeconds * 1000;
-      localStorage.setItem(storageKey, endTime);
-    } else {
-      endTime = parseInt(endTime, 10);
+    // Buttons im gemeinsamen Wrapper (gleicher <div>-Container)
+    let wrapper = contentEl.parentElement;
+    const hasButtons = el => !!el?.querySelector('[data-cu-slider="btnLeft"], [data-cu-slider="btnRight"]');
+    if (wrapper && !hasButtons(wrapper) && wrapper.parentElement && hasButtons(wrapper.parentElement)) {
+      wrapper = wrapper.parentElement;
     }
 
-    const update = () => {
-      const remaining = Math.floor((endTime - Date.now()) / 1000);
+    const btnLeft = wrapper?.querySelector('[data-cu-slider="btnLeft"]') || null;
+    const btnRight = wrapper?.querySelector('[data-cu-slider="btnRight"]') || null;
+    if (!btnLeft && !btnRight) return;
 
-      if (remaining <= 0) {
-        clearInterval(interval);
-        el.textContent = "00:00";
-        localStorage.removeItem(storageKey);
-        return;
-      }
+    const clamp = (n, min, max) => Math.max(min, Math.min(max, n));
 
-      const m = String(Math.floor(remaining / 60)).padStart(2, '0');
-      const s = String(remaining % 60).padStart(2, '0');
-      el.textContent = `${m}:${s}`;
+    const currentIndex = () => {
+      const centerX = contentEl.scrollLeft + contentEl.clientWidth / 2;
+      let best = 0, dist = Infinity;
+      items.forEach((it, i) => {
+        const c = it.offsetLeft + it.offsetWidth / 2;
+        const d = Math.abs(c - centerX);
+        if (d < dist) { dist = d; best = i; }
+      });
+      return best;
     };
 
-    // gleich einmal initial aktualisieren (aber noch hidden lassen)
-    update();
+    const goTo = (i) => {
+      i = clamp(i, 0, items.length - 1);
+      items[i].scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+      requestAnimationFrame(updateButtons);
+      setTimeout(updateButtons, 180);
+    };
 
-    const interval = setInterval(update, 1000);
+    const updateButtons = () => {
+      const i = currentIndex();
+      if (btnLeft) btnLeft.toggleAttribute('disabled', i <= 0);
+      if (btnRight) btnRight.toggleAttribute('disabled', i >= items.length - 1);
+    };
 
-    // Sichtbar machen erst nach der ersten Sekunde
-    setTimeout(() => {
-      el.style.visibility = "visible";
-    }, 1000);
+    btnLeft?.addEventListener('click', e => { e.preventDefault(); goTo(currentIndex() - 1); });
+    btnRight?.addEventListener('click', e => { e.preventDefault(); goTo(currentIndex() + 1); });
+
+    contentEl.addEventListener('scroll', updateButtons, { passive: true });
+    window.addEventListener('resize', updateButtons);
+
+    updateButtons();
   });
-});
+}
 
-// Global Navigation
-// JavaScript für das Copteruni-Hauptmenü (g_nav)
-// --------------------------------------------------
-// Benötigt: GSAP (gsap.min.js + gsap.matchMedia.js)fsdfsd
-// --------------------------------------------------
-document.addEventListener('DOMContentLoaded', () => {
+function initTimer() {
+  document.addEventListener('DOMContentLoaded', () => {
+    const els = document.querySelectorAll('[data-cu-counter="timer"]');
+
+    els.forEach((el, i) => {
+      const storageKey = `cu-timer-${i}`;
+      const text = el.textContent.trim();
+      const [mm, ss] = text.split(':').map(Number);
+      const startSeconds = mm * 60 + ss;
+
+      let endTime = localStorage.getItem(storageKey);
+
+      if (!endTime) {
+        endTime = Date.now() + startSeconds * 1000;
+        localStorage.setItem(storageKey, endTime);
+      } else {
+        endTime = parseInt(endTime, 10);
+      }
+
+      const update = () => {
+        const remaining = Math.floor((endTime - Date.now()) / 1000);
+
+        if (remaining <= 0) {
+          clearInterval(interval);
+          el.textContent = "00:00";
+          localStorage.removeItem(storageKey);
+          return;
+        }
+
+        const m = String(Math.floor(remaining / 60)).padStart(2, '0');
+        const s = String(remaining % 60).padStart(2, '0');
+        el.textContent = `${m}:${s}`;
+      };
+
+      // gleich einmal initial aktualisieren (aber noch hidden lassen)
+      update();
+
+      const interval = setInterval(update, 1000);
+
+      // Sichtbar machen erst nach der ersten Sekunde
+      setTimeout(() => {
+        el.style.visibility = "visible";
+      }, 1000);
+    });
+  });
+}
+
+function initGlobalNav() {
   const nav = document.querySelector('.g_nav');
   const btn = document.getElementById('g_nav_btn_mobile_menu');
   const menu = document.querySelector('.g_nav_menu');
@@ -411,4 +416,4 @@ document.addEventListener('DOMContentLoaded', () => {
       restoreOriginal();
     };
   });
-});
+}
