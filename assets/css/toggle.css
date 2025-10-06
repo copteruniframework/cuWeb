@@ -1,0 +1,101 @@
+ /* Basis: alle Maße & Farben leiten sich von --h (Höhe) ab */
+ .toggle {
+     /* 🔧 Größe & Geometrie */
+     --h: 2rem;
+     /* Grundhöhe des Switches */
+     --ratio: 2;
+     /* Breite = Höhe * ratio */
+     --w: calc(var(--h) * var(--ratio));
+     --pad: calc(var(--h) * 0.125);
+     /* Innenabstand Track → Thumb */
+     --r: 100vw;
+     /* Track-Radius (voll rund) */
+     --thumb: calc(var(--h) - 2*var(--pad));
+     /* Thumb-Durchmesser */
+     --x: calc(var(--w) - var(--thumb) - 2*var(--pad));
+     /* Weg des Thumbs */
+
+     /* 🎨 Farben & Effekte */
+     --track-off: #c8c8c8;
+     --track-on: var(--_brand---tintsshades--brand-500);
+     --thumb-bg: #fff;
+     --track-shadow: 0 0 0 0 transparent;
+     --thumb-shadow: 0 1px 2px rgb(0 0 0 / 0.25);
+
+     position: relative;
+     display: inline-block;
+     width: var(--w);
+     height: var(--h);
+ }
+
+ /* Das eigentliche Kontrollkästchen unsichtbar, aber fokusfähig lassen */
+ .toggle__input {
+     position: absolute;
+     inset: 0;
+     width: 100%;
+     height: 100%;
+     margin: 0;
+     opacity: 0;
+     /* bleibt fokusierbar für A11y */
+     cursor: pointer;
+ }
+
+ /* Visueller Track */
+ .toggle__slider {
+     position: absolute;
+     inset: 0;
+     background-color: var(--track-off);
+     border-radius: var(--r);
+     box-shadow: var(--track-shadow);
+     transition: background-color 200ms ease, box-shadow 200ms ease;
+     pointer-events: none;
+ }
+
+ /* Thumb */
+ .toggle__slider::before {
+     content: "";
+     position: absolute;
+     top: var(--pad);
+     left: var(--pad);
+     width: var(--thumb);
+     height: var(--thumb);
+     background-color: var(--thumb-bg);
+     border-radius: 50%;
+     box-shadow: var(--thumb-shadow);
+     transition: transform 200ms ease;
+     will-change: transform;
+ }
+
+ /* Zustand: ON */
+ .toggle__input:checked+.toggle__slider {
+     background-color: var(--track-on);
+ }
+
+ .toggle__input:checked+.toggle__slider::before {
+     transform: translateX(var(--x));
+ }
+
+ /* Fokus sichtbar machen (A11y) */
+ .toggle__input:focus-visible+.toggle__slider {
+     box-shadow: 0 0 0 calc(var(--h) * 0.15) rgb(0 128 255 / 0.35);
+ }
+
+ /* Disabled-Zustand optional */
+ .toggle[aria-disabled="true"] .toggle__input,
+ .toggle__input:disabled {
+     cursor: not-allowed;
+ }
+
+ .toggle__input:disabled+.toggle__slider {
+     filter: grayscale(0.2);
+     opacity: 0.7;
+ }
+
+ /* Nutzer, die reduzierte Bewegung bevorzugen */
+ @media (prefers-reduced-motion: reduce) {
+
+     .toggle__slider,
+     .toggle__slider::before {
+         transition: none;
+     }
+ }
