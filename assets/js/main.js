@@ -101,117 +101,61 @@ function initHorizontalSlider() {
   });
 }
 
-/**
- * Animiert das Öffnen/Schließen von `<details>`-Elementen mit **GSAP**.
- *
- * Verhalten:
- * - Intercepted `summary`-Klick (per `preventDefault`) für kontrollierte Animation.
- * - Öffnen: animiert das direkt nachfolgende Content-Element (`summary.nextElementSibling`)
- *   von `height: 0, opacity: 0` auf seine natürliche Höhe/Deckkraft.
- * - Schließen: animiert zurück auf `height: 0, opacity: 0` und setzt anschließend `detail.open = false`.
- * - Während einer laufenden Tween wird eine erneute Interaktion blockiert (`gsap.isTweening`).
- * - Optionales **Autoclose**: Mit `data-autoclose="true"` am `<details>` schließt das Element
- *   bei Klicks außerhalb automatisch.
- *
- * Voraussetzungen:
- * - GSAP v3 muss global verfügbar sein (`window.gsap`).
- * - Das animierte Content-Element ist `summary.nextElementSibling`. Stelle sicher,
- *   dass die gewünschte Content-Wrapper-Struktur vorliegt.
- *
- * Zugänglichkeit:
- * - Der native Toggle wird via JS gesteuert; der `open`-State bleibt korrekt gesetzt/zurückgesetzt.
- * - Die `summary`-Interaktion bleibt fokussierbar; Animation ändert nur Präsentation.
- *
- * @returns {void} Kein Rückgabewert.
- *
- * @example
- * <!-- Markup -->
- * <details data-autoclose="true">
- *   <summary>Mehr anzeigen</summary>
- *   <div>
- *     <p>Dein Inhalt …</p>
- *   </div>
- * </details>
- *
- * @example
- * // Initialisierung (Projektstil mit DOMContentLoaded)
- * document.addEventListener('DOMContentLoaded', () => {
- *   if (!window.gsap) return;
- *   initGSAPDetails();
- * });
- *
- * @since 1.0.0
- * @see https://gsap.com/docs/v3/
- */
 function initGSAPDetails() {
   document.querySelectorAll('details').forEach(detail => {
     const summary = detail.querySelector('summary');
     const content = summary.nextElementSibling;
+    // Timeline vorbereiten (pausiert)
+    const tl = gsap.timeline(
+      {
+        paused: true,
+        defaults: {
+          duration: 0.35,
+          ease: 'power2.out'
+        }
+      });
 
-    const closeDetails = () => {
-      if (!detail.open || gsap.isTweening(content)) return;
-
-      gsap.to(content, {
+    tl.fromTo(
+      content,
+      {
         height: 0,
         opacity: 0,
-        overflow: 'clip',
-        duration: 0.3,
-        ease: 'power2.in',
-        onComplete: () => {
-          detail.open = false;
-          gsap.set(content, { clearProps: "all" });
-        }
-      });
-    };
-
-    // 1) Backdrop-Klick erkennen (zählt als Klick auf das Content-Element selbst)
-    content.addEventListener('click', (e) => {
-      if (e.target === content && detail.open) {
-        e.stopPropagation(); // (optional) verhindert doppeltes Auslösen über document
-        closeDetails();
+      },
+      {
+        height: content.scrollHeight,
+        opacity: 1,
+        overflow: 'clip'
       }
+    );
+
+    tl.eventCallback('onReverseComplete', () => {
+      detail.open = false;
+      gsap.set(content, { clearProps: "all" });
     });
 
-    // 2) Summary toggelt wie gehabt
-    summary.addEventListener('click', e => {
-      e.preventDefault();
-      if (gsap.isTweening(content)) return;
-
-      if (!detail.open) {
-        detail.open = true;
-        gsap.fromTo(content,
-          { height: 0, opacity: 0, overflow: 'clip' },
-          {
-            height: content.scrollHeight,
-            opacity: 1,
-            duration: 0.4,
-            ease: 'power2.out',
-            onComplete: () => gsap.set(content, { clearProps: "all" })
-          }
-        );
-      } else {
-        closeDetails();
-      }
-    });
-
-    // 3) Outside-Click (für alle Fälle)
+    let outsideHandler;
     if (detail.dataset.autoclose === "true") {
-      document.addEventListener('click', (e) => {
+      outsideHandler = (e) => {
         if (!detail.open) return;
-        // Wenn NICHT innerhalb des <details> geklickt → schließen
-        if (!detail.contains(e.target)) {
-          closeDetails();
+        if (!content.contains(e.target) && !summary.contains(e.target)) {
+          tl.reverse();
+          document.removeEventListener("click", outsideHandler);
         }
-      });
+      };
     }
 
-    // 4) ESC zum Schließen (Quality-of-Life)
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') closeDetails();
+    summary.addEventListener('click', e => {
+      e.preventDefault();
+      if (!detail.open) {
+        detail.open = true;
+        tl.play(0);
+        if (outsideHandler) document.addEventListener("click", outsideHandler);
+      } else {
+        tl.reverse();
+      }
     });
   });
 }
-
 
 /**
  * Setzt das **aktuelle Jahr** in alle `<time>`-Elemente mit `datetime="currentYear"`.
