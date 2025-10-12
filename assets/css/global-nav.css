@@ -55,6 +55,11 @@
     color: var(--_theme---color--text);
 }
 
+.g_nav_icon {
+    width: 2rem;
+    height: 2rem;
+}
+
 /* .dev_nav_buttons .g_nav_item {
     aspect-ratio: 1 / 1;
 } */
