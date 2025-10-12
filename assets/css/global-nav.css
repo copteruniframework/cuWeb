@@ -58,6 +58,7 @@
 .g_nav_icon {
     width: 2rem;
     height: 2rem;
+    pointer-events: none;
 }
 
 /* .dev_nav_buttons .g_nav_item {
