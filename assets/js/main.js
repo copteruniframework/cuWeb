@@ -106,23 +106,47 @@ function initGSAPDetails() {
     const summary = detail.querySelector('summary');
     const content = summary.nextElementSibling;
 
-    // zentrale Timeline – Höhe als Funktionswert!
+    // Initialzustand für transform-basierte Animation
+    if (!detail.open) {
+      gsap.set(content, {
+        // display: 'block',           // stellt sicher, dass es gerendert wird
+        transformOrigin: '50% 0%',
+        scaleY: 0,
+        opacity: 0,
+        overflow: 'clip',           // verhindert "Durchscheinen"
+      });
+    } else {
+      gsap.set(content, {
+        // display: 'block',
+        transformOrigin: '50% 0%',
+        scaleY: 1,
+        opacity: 1
+      });
+    }
+
+    // Timeline – messfrei via scaleY
     const tl = gsap.timeline({
       paused: true,
       defaults: { duration: 0.35, ease: 'power2.out' },
       onReverseComplete: () => {
+        // geschlossen halten (Scale bleibt bei 0), kein clearProps,
+        // sonst würde das Panel wieder sichtbar werden.
         detail.open = false;
-        gsap.set(content, { clearProps: 'all' });
       }
     });
 
     tl.fromTo(content,
-      { height: 0, opacity: 0, overflow: 'clip' },
       {
-        // wird JEDES MAL neu berechnet
-        height: () => content.scrollHeight,
+        scaleY: 0,
+        opacity: 0,
+        transformOrigin: '50% 0%',
+        willChange: 'transform,opacity'
+      },
+      {
+        scaleY: 1,
         opacity: 1,
-        onComplete: () => gsap.set(content, { height: 'auto' })
+        onStart: () => { detail.open = true; },
+        onComplete: () => { gsap.set(content, { willChange: '' }); }
       }
     );
 
@@ -141,13 +165,8 @@ function initGSAPDetails() {
       e.preventDefault();
 
       if (!detail.open) {
-        // WICHTIG: Erst öffnen, dann messen!
-        detail.open = true;
-
-        // Layout kann sich seit Erstellung geändert haben
-        tl.invalidate();
+        // Nur abspielen; kein Invalidate/scrollHeight nötig
         tl.play(0);
-
         if (outsideHandler) document.addEventListener('click', outsideHandler);
       } else {
         tl.reverse();
