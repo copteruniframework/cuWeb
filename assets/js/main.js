@@ -105,51 +105,50 @@ function initGSAPDetails() {
   document.querySelectorAll('details').forEach(detail => {
     const summary = detail.querySelector('summary');
     const content = summary.nextElementSibling;
-    // Timeline vorbereiten (pausiert)
-    const tl = gsap.timeline(
-      {
-        paused: true,
-        defaults: {
-          duration: 0.35,
-          ease: 'power2.out'
-        }
-      });
 
-    tl.fromTo(
-      content,
+    // zentrale Timeline – Höhe als Funktionswert!
+    const tl = gsap.timeline({
+      paused: true,
+      defaults: { duration: 0.35, ease: 'power2.out' },
+      onReverseComplete: () => {
+        detail.open = false;
+        gsap.set(content, { clearProps: 'all' });
+      }
+    });
+
+    tl.fromTo(content,
+      { height: 0, opacity: 0, overflow: 'clip' },
       {
-        height: 0,
-        opacity: 0,
-      },
-      {
-        height: content.scrollHeight,
+        // wird JEDES MAL neu berechnet
+        height: () => content.scrollHeight,
         opacity: 1,
-        overflow: 'clip'
+        onComplete: () => gsap.set(content, { height: 'auto' })
       }
     );
 
-    tl.eventCallback('onReverseComplete', () => {
-      detail.open = false;
-      gsap.set(content, { clearProps: "all" });
-    });
-
     let outsideHandler;
-    if (detail.dataset.autoclose === "true") {
+    if (detail.dataset.autoclose === 'true') {
       outsideHandler = (e) => {
         if (!detail.open) return;
         if (!content.contains(e.target) && !summary.contains(e.target)) {
           tl.reverse();
-          document.removeEventListener("click", outsideHandler);
+          document.removeEventListener('click', outsideHandler);
         }
       };
     }
 
-    summary.addEventListener('click', e => {
+    summary.addEventListener('click', (e) => {
       e.preventDefault();
+
       if (!detail.open) {
+        // WICHTIG: Erst öffnen, dann messen!
         detail.open = true;
+
+        // Layout kann sich seit Erstellung geändert haben
+        tl.invalidate();
         tl.play(0);
-        if (outsideHandler) document.addEventListener("click", outsideHandler);
+
+        if (outsideHandler) document.addEventListener('click', outsideHandler);
       } else {
         tl.reverse();
       }
