@@ -1,20 +1,30 @@
  /* Basis: alle Maße & Farben leiten sich von --h (Höhe) ab */
  .toggle {
-     /* 🔧 Größe & Geometrie */
+     /* Größe  */
      --h: 2rem;
      --ratio: 2;
      --w: calc(var(--h) * var(--ratio));
-     --pad: calc(var(--h) * 0.125);
+
+     /* Border */
+     --b: 0px;
      --r: 100vw;
-     --thumb: calc(var(--h) - 2*var(--pad));
-     --x: calc(var(--w) - var(--thumb) - 2*var(--pad));
-     --icon-size: calc(var(--h) * 0.6);
+
+     /* Padding */
+     --pad: calc(var(--h) * 0.075);
+
+
+     /* ===== Ableitungen (Innengeometrie) ===== */
+     --hi: calc(var(--h) - 4 * var(--b));
+     --wi: calc(var(--w) - 4 * var(--b));
+     --thumb: calc(var(--hi) - 2 * var(--pad));
+     --x: calc(var(--wi) - var(--thumb) - 2 * var(--pad));
+     --icon-size: calc(var(--hi) * 0.6);
      --icon-inset: calc(var(--pad) + (var(--thumb) - var(--icon-size)) / 2);
 
-     /* 🎨 Farben & Effekte */
-     --track-off: #c8c8c8;
+     /* Farben & Effekte */
+     --track-off: var(--_theme---color--background_secondary);
      --track-on: var(--_brand---tintsshades--brand-500);
-     --thumb-bg: #fff;
+     --thumb-bg: var(--_brand---tintsshades--brand-500);
      --track-shadow: 0 0 0 0 transparent;
      --thumb-shadow: 0 1px 2px rgb(0 0 0 / 0.25);
 
@@ -22,6 +32,8 @@
      display: inline-block;
      width: var(--w);
      height: var(--h);
+     background-color: transparent;
+     vertical-align: middle;
  }
 
  /* Das eigentliche Kontrollkästchen unsichtbar, aber fokusfähig lassen */
@@ -39,15 +51,32 @@
  /* Visueller Track */
  .toggle__slider {
      position: absolute;
-     inset: 0;
+     inset: var(--b);
      background-color: var(--track-off);
      border-radius: var(--r);
      box-shadow: var(--track-shadow);
-     transition: background-color 200ms ease, box-shadow 200ms ease;
-     pointer-events: none;
      overflow: hidden;
+     /* nichts darf überragen */
+     transition: background-color 200ms ease, box-shadow 200ms ease;
      z-index: 0;
+     cursor: pointer;
  }
+
+  .toggle.is-plain {
+     --track-on: unset;
+ }
+
+ .toggle.is-secondary {
+     --h: 2.5rem;
+     --b: 2px;
+ }
+
+ .toggle.is-secondary .toggle__slider {
+     box-sizing: border-box;
+     border: var(--b) solid var(--_brand---tintsshades--brand-500);
+ }
+
+
 
  /* Thumb */
  .toggle__slider::before {
@@ -63,12 +92,16 @@
      transition: transform 200ms ease;
      will-change: transform;
      z-index: 2;
+     /* über Icons */
  }
+
 
  /* Zustand: ON */
  .toggle__input:checked+.toggle__slider {
      background-color: var(--track-on);
  }
+
+
 
  .toggle__input:checked+.toggle__slider::before {
      transform: translateX(var(--x));
@@ -124,6 +157,17 @@
      display: block;
      object-fit: contain;
      /* für <img> */
+ }
+
+ .toggle.u-background-color-brand500 {
+     /* --track-off: var(--_theme---color--background_secondary);
+     --track-on: var(--_brand---tintsshades--brand-500); */
+     --thumb-bg: var(--_brand---tintsshades--brand-500);
+     /* border: var(--b) solid var(--_brand---tintsshades--brand-500); */
+ }
+
+ .toggle.u-background-color-brand500 .toggle__slider {
+     /* border: var(--b) solid var(--_brand---tintsshades--brand-500); */
  }
 
  /* Nutzer, die reduzierte Bewegung bevorzugen */
