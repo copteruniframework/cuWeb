@@ -33,6 +33,14 @@
     display: contents;
 }
 
+.g_nav_megamenu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    z-index: 10;
+}
+
 .dev_nav_buttons {
     display: flex;
     justify-content: space-between;
