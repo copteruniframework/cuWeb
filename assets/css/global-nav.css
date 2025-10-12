@@ -93,7 +93,7 @@
     /* pointer-events: none; */
 }
 
-@media (max-width: 1024px) {
+@media (max-width: 1040px) {
     #g_nav_btn_mobile_menu {
         display: block;
     }

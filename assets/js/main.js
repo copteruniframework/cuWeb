@@ -369,7 +369,7 @@ function initGlobalNav() {
 
   const mm = gsap.matchMedia();
 
-  mm.add('(max-width: 1024px)', () => {
+  mm.add('(max-width: 1040px)', () => {
     const moveAfterButton = () => nav.insertAdjacentElement('beforeend', menu);
     const restoreOriginal = () => placeholder.parentNode.insertBefore(menu, placeholder);
 
