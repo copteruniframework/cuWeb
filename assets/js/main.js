@@ -112,6 +112,7 @@ function initGSAPDetails() {
     gsap.set(content, {
       scaleY: 0,
       overflow: 'clip',           // verhindert "Durchscheinen"
+      transformOrigin: '50% 0%',
     });
 
     gsap.set(childEls, {
@@ -119,46 +120,24 @@ function initGSAPDetails() {
       y: -6
     });
 
-    // Timeline – messfrei via scaleY
+    // Timeline
     const tl = gsap.timeline({
       paused: true,
       defaults: { duration: 0.35, ease: 'power2.out' },
-      onReverseComplete: () => {
-        // geschlossen halten (Scale bleibt bei 0), kein clearProps,
-        // sonst würde das Panel wieder sichtbar werden.
-        detail.open = false;
-      }
+      onReverseComplete: () => { detail.open = false; }
     });
 
-    tl.fromTo(content,
-      {
-        scaleY: 0,
-        // overflow: 'clip',
-        transformOrigin: '50% 0%',
-        willChange: 'transform,opacity'
-      },
-      {
-        scaleY: 1,
-        onStart: () => { detail.open = true; },
-        onComplete: () => { gsap.set(content, { willChange: '' }); }
-      }
-    );
-    tl.fromTo(
-      childEls,
-      {
-        opacity: 0,
-        y: -6,
-        willChange: 'transform,opacity'
-      },
-      {
-        opacity: 1,
-        y: 0,
-        stagger: 0.04,
-        duration: 0.38,
-        onComplete: () => { gsap.set(childEls, { willChange: '' }); }
-      },
-      '-=0.25'
-    );
+    tl.to(content, {
+      scaleY: 1,
+      onStart: () => { detail.open = true; },
+    });
+
+    tl.to(childEls, {
+      opacity: 1,
+      y: 0,
+      stagger: 0.04,
+      duration: 0.38,
+    }, '-=0.25');
 
     let outsideHandler;
     if (detail.dataset.autoclose === 'true') {
