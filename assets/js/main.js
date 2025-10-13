@@ -104,14 +104,15 @@ function initHorizontalSlider() {
 function initGSAPDetails() {
   document.querySelectorAll('details').forEach(detail => {
     const summary = detail.querySelector('summary');
-    const content = summary.nextElementSibling;
-    const childEls = Array.from(content?.children || []).filter(el => el.nodeType === 1);
-
-    // Initialzustand für transform-basierte Animation
+    const content = summary?.nextElementSibling;
+    if (!content) return;
+    const childEls = [...content.children];
+    const contentDisplay = getComputedStyle(content).display;
 
     gsap.set(content, {
+      display: 'none',
       scaleY: 0,
-      overflow: 'clip',           // verhindert "Durchscheinen"
+      overflow: 'clip',
       transformOrigin: '50% 0%',
     });
 
@@ -120,13 +121,16 @@ function initGSAPDetails() {
       y: -6
     });
 
-    // Timeline
     const tl = gsap.timeline({
       paused: true,
       defaults: { duration: 0.35, ease: 'power2.out' },
-      onReverseComplete: () => { detail.open = false; }
+      onReverseComplete: () => {
+        detail.open = false;
+        gsap.set(content, { display: 'none' });
+      }
     });
 
+    tl.set(content, { display: contentDisplay }, 0);
     tl.to(content, {
       scaleY: 1,
       onStart: () => { detail.open = true; },
@@ -154,7 +158,6 @@ function initGSAPDetails() {
       e.preventDefault();
 
       if (!detail.open) {
-        // Nur abspielen; kein Invalidate/scrollHeight nötig
         tl.play(0);
         if (outsideHandler) document.addEventListener('click', outsideHandler);
       } else {
