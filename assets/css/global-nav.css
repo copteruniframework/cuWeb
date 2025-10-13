@@ -69,7 +69,8 @@
     flex-grow: 0; */
 }
 
-.g_nav_item.logo svg {
+.g_nav_logo {
+    display: block;
     height: 2.25rem;
 }
 
