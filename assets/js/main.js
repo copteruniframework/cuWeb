@@ -105,24 +105,19 @@ function initGSAPDetails() {
   document.querySelectorAll('details').forEach(detail => {
     const summary = detail.querySelector('summary');
     const content = summary.nextElementSibling;
+    const childEls = Array.from(content?.children || []).filter(el => el.nodeType === 1);
 
     // Initialzustand für transform-basierte Animation
-    if (!detail.open) {
-      gsap.set(content, {
-        // display: 'block',           // stellt sicher, dass es gerendert wird
-        transformOrigin: '50% 0%',
-        scaleY: 0,
-        opacity: 0,
-        overflow: 'clip',           // verhindert "Durchscheinen"
-      });
-    } else {
-      gsap.set(content, {
-        // display: 'block',
-        transformOrigin: '50% 0%',
-        scaleY: 1,
-        opacity: 1
-      });
-    }
+
+    gsap.set(content, {
+      scaleY: 0,
+      overflow: 'clip',           // verhindert "Durchscheinen"
+    });
+
+    gsap.set(childEls, {
+      opacity: 0,
+      y: -6
+    });
 
     // Timeline – messfrei via scaleY
     const tl = gsap.timeline({
@@ -138,16 +133,31 @@ function initGSAPDetails() {
     tl.fromTo(content,
       {
         scaleY: 0,
-        opacity: 0,
+        // overflow: 'clip',
         transformOrigin: '50% 0%',
         willChange: 'transform,opacity'
       },
       {
         scaleY: 1,
-        opacity: 1,
         onStart: () => { detail.open = true; },
         onComplete: () => { gsap.set(content, { willChange: '' }); }
       }
+    );
+    tl.fromTo(
+      childEls,
+      {
+        opacity: 0,
+        y: -6,
+        willChange: 'transform,opacity'
+      },
+      {
+        opacity: 1,
+        y: 0,
+        stagger: 0.04,
+        duration: 0.38,
+        onComplete: () => { gsap.set(childEls, { willChange: '' }); }
+      },
+      '-=0.25'
     );
 
     let outsideHandler;
