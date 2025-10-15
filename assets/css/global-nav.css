@@ -9,7 +9,7 @@
 
 .g_header {
     background-color: var(--nav-bg);
-    /* backdrop-filter: blur(10px); */
+    backdrop-filter: blur(10px);
     width: 100%;
     position: fixed;
     z-index: 50;
@@ -84,11 +84,6 @@
     display: none;
 }
 
-.g_nav summary {
-    /* height: 100%; */
-    /* width: 100%; */
-}
-
 .g_backdrop_blur::before {
     content: '';
     position: absolute;
@@ -149,32 +144,4 @@
         justify-content: left;
         font-size: 24px;
     }
-}
-
-.u-details-overlay {
-    position: relative;
-}
-
-.u-details-overlay>div {
-    position: absolute;
-}
-
-.u-details-overlay.bottom {
-    top: 100%;
-    left: 0;
-}
-
-.u-details-overlay.right>div {
-    top: 0;
-    left: 100%;
-}
-
-.u-details-overlay.left>div {
-    top: 0;
-    right: 100%;
-}
-
-.u-details-overlay.bottom>div {
-    top: 100%;
-    left: 0;
 }
