@@ -102,69 +102,65 @@ function initHorizontalSlider() {
 }
 
 function initGSAPDetails() {
-  document.querySelectorAll('details').forEach(detail => {
-    const summary = detail.querySelector('summary');
-    const content = summary?.nextElementSibling;
-    if (!content) return;
-    const childEls = [...content.children];
-    const contentDisplay = getComputedStyle(content).display;
+    document.querySelectorAll('details').forEach(detail => {
+        const summary = detail.querySelector('summary');
+        const content = summary?.nextElementSibling;
+        if (!content) return;
 
-    gsap.set(content, {
-      display: 'none',
-      scaleY: 0,
-      overflow: 'clip',
-      transformOrigin: '50% 0%',
-    });
+        const childEls = [...content.children];
 
-    gsap.set(childEls, {
-      opacity: 0,
-      y: -6
-    });
+        gsap.set(content, {
+            height: 0,
+            overflow: 'hidden',
+        });
 
-    const tl = gsap.timeline({
-      paused: true,
-      defaults: { duration: 0.35, ease: 'power2.out' },
-      onReverseComplete: () => {
-        detail.open = false;
-        gsap.set(content, { display: 'none' });
-      }
-    });
+        gsap.set(childEls, {
+            opacity: 0,
+        });
 
-    tl.set(content, { display: contentDisplay }, 0);
-    tl.to(content, {
-      scaleY: 1,
-      onStart: () => { detail.open = true; },
-    });
+        const tl = gsap.timeline({
+            paused: true,
+            defaults: { duration: 0.35, ease: 'power2.out' },
+            onReverseComplete: () => {
+                detail.open = false;
+            }
+        });
+        tl.set(detail, { attr: { open: '' } }, 0);
 
-    tl.to(childEls, {
-      opacity: 1,
-      y: 0,
-      stagger: 0.04,
-      duration: 0.38,
-    }, '-=0.25');
+        tl.to(content, {
+            height: 'auto',
+        });
 
-    let outsideHandler;
-    if (detail.dataset.autoclose === 'true') {
-      outsideHandler = (e) => {
-        if (!detail.open) return;
-        if (!content.contains(e.target) && !summary.contains(e.target)) {
-          tl.reverse();
-          document.removeEventListener('click', outsideHandler);
+        tl.to(childEls, {
+            opacity: 1,
+            stagger: 0.04,
+            duration: 0.38,
+        }, '-=0.25');
+
+        let outsideHandler;
+        if (detail.dataset.autoclose === 'true') {
+            outsideHandler = (e) => {
+                if (!detail.open) return;
+                if (!content.contains(e.target) && !summary.contains(e.target)) {
+                    tl.reverse();
+                    document.removeEventListener('click', outsideHandler);
+                }
+            };
         }
-      };
-    }
 
-    summary.addEventListener('click', (e) => {
-      e.preventDefault();
+        summary.addEventListener('click', (e) => {
+            e.preventDefault();
 
-      if (!detail.open) {
-        tl.play(0);
-        if (outsideHandler) document.addEventListener('click', outsideHandler);
-      } else {
-        tl.reverse();
-      }
+            if (!detail.open) {
+                tl.play(0);
+                if (outsideHandler) document.addEventListener('click', outsideHandler);
+            } else {
+                tl.reverse();
+            }
+        });
+
+
     });
-  });
 }
 
 /**
