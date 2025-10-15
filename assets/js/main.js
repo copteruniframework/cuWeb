@@ -382,6 +382,7 @@ function initGlobalNav() {
   mm.add('(max-width: 1040px)', () => {
     const moveAfterButton = () => nav.insertAdjacentElement('beforeend', menu);
     const restoreOriginal = () => placeholder.parentNode.insertBefore(menu, placeholder);
+    menu.removeAttribute('open');
 
     const tl = gsap.timeline({
       paused: true,
@@ -389,12 +390,14 @@ function initGlobalNav() {
       onStart() {
         lockScroll();
         moveAfterButton();
+        menu.setAttribute('open', '');
         btn.setAttribute('aria-expanded', 'true');
       },
       onReverseComplete() {
         unlockScroll();
         gsap.set(menu, { clearProps: 'all' });
         gsap.set(items, { clearProps: 'all' });
+        menu.removeAttribute('open');
         btn.setAttribute('aria-expanded', 'false');
         restoreOriginal();
       }
@@ -423,6 +426,7 @@ function initGlobalNav() {
       tl.kill();
       gsap.set(menu, { clearProps: 'all' });
       gsap.set(items, { clearProps: 'all' });
+      menu.removeAttribute('open');
       btn.setAttribute('aria-expanded', 'false');
       restoreOriginal();
     };
