@@ -178,7 +178,6 @@
   }
 
   .i-underline::after {
-      position: relative;
       content: "";
       position: absolute;
       left: 0;
@@ -186,13 +185,38 @@
       width: 100%;
       height: 2px;
       background: currentColor;
-      transform: scaleX(0);
       transform-origin: left;
-      transition: transform 0.3s ease;
+      transform: scaleX(1);
+      opacity: 1;
+      transition:
+          transform 0.3s ease,
+          opacity 0.3s ease;
   }
 
-  .i-underline:hover::after {
+  .i-underline.on-hover-transform-x::after {
+      transform: scaleX(0);
+  }
+
+  .i-underline.on-hover-transform-x:hover::after {
       transform: scaleX(1);
+  }
+
+  .i-underline.on-hover-transform-y::after {
+      transform: translateY(-4px);
+      opacity: 0;
+  }
+
+  .i-underline.on-hover-transform-y:hover::after {
+      transform: translateY(0);
+      opacity: 1;
+  }
+
+  .i-underline.on-hover-opacity::after {
+      opacity: 0;
+  }
+
+  .i-underline.on-hover-opacity:hover::after {
+      opacity: 1;
   }
 
   @supports (-webkit-appearance: none) {
