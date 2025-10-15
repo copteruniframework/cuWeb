@@ -16,40 +16,34 @@
 }
 
 .g_nav {
-    /* height: var(--global-nav--height); */
     max-width: 90rem;
     width: 100%;
     display: flex;
     align-items: stretch;
     justify-content: space-between;
-    gap: var(--nav-gap-x);
     margin: 0 auto;
     position: relative;
 }
 
-.g_nav_menu,
-.g_nav_menu_list,
-.g_nav_menu_list>li {
+.g_nav_menu {
     display: contents;
 }
 
-.g_nav_megamenu {
-    position: absolute;
-    top: 100%;
-    left: 0;
-    right: 0;
-    z-index: 10;
+.g_nav_menu_list {
+    display: flex;
+    justify-content: space-around;
+    flex-grow: 1;
 }
 
 .dev_nav_buttons {
     display: flex;
-    justify-content: space-between;
     gap: var(--nav-gap-x);
 }
 
 .g_nav_item {
     flex-shrink: 0;
     flex-grow: 0;
+    height: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -63,12 +57,6 @@
     color: var(--_theme---color--text);
 }
 
-
-.g_nav_item.logo {
-    /* width: fit-content;
-    flex-grow: 0; */
-}
-
 .g_nav_logo {
     display: block;
     height: 2.25rem;
@@ -80,13 +68,25 @@
     pointer-events: none;
 }
 
+.g_nav_menu details {
+    display: contents;
+}
+
+.g_nav_megamenu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    z-index: 10;
+}
+
 #g_nav_btn_mobile_menu {
     display: none;
 }
 
 .g_nav summary {
-    height: 100%;
-    width: 100%;
+    /* height: 100%; */
+    /* width: 100%; */
 }
 
 .g_backdrop_blur::before {
@@ -132,8 +132,17 @@
         display: flex;
         flex-direction: column;
         align-items: stretch;
+        justify-content: start;
         gap: var(--nav-gap-x);
         height: 100%;
+    }
+
+    .g_nav_menu details {
+        display: block;
+    }
+
+    .g_nav_menu .g_nav_megamenu {
+        position: static;
     }
 
     .g_nav_menu :is(a, summary) {
