@@ -152,7 +152,7 @@ function initGSAPDetails() {
             e.preventDefault();
 
             if (!detail.open) {
-                tl.play(0);
+                tl.invalidate().play(0);
                 if (outsideHandler) document.addEventListener('click', outsideHandler);
             } else {
                 tl.reverse();
