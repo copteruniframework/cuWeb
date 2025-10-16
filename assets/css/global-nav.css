@@ -1,8 +1,8 @@
 :root {
     --nav-height: 48px;
     --nav-gap-x: 16px;
-    --nav-bg-close: rgba(22, 22, 23, 0.8);
-    --nav-bg-open: rgba(22, 22, 23, 1);
+    --nav-bg-close: var(--_theme---global-nav--background-close);
+    --nav-bg-open: var(--_theme---global-nav--background-open);
     --nav-panel-bg: #fff;
     --nav-border: #e6e6e6;
     --nav-width: 90rem;
