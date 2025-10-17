@@ -102,7 +102,7 @@ function initHorizontalSlider() {
 }
 
 function initGSAPDetails() {
-    const HOVER_CLICK_DELAY = 500;
+    const HOVER_CLICK_DELAY = 750;
 
     const parseOpenOnHoverConfig = (value = '') => {
         const [enabledRaw = 'false', breakpointRaw] = value
