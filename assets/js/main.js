@@ -102,65 +102,78 @@ function initHorizontalSlider() {
 }
 
 function initGSAPDetails() {
-    document.querySelectorAll('details').forEach(detail => {
-        const summary = detail.querySelector('summary');
-        const content = summary?.nextElementSibling;
-        if (!content) return;
+  document.querySelectorAll('details').forEach(detail => {
+    const summary = detail.querySelector('summary');
+    const content = summary?.nextElementSibling;
+    if (!content) return;
 
-        const childEls = [...content.children];
+    const childEls = [...content.children];
 
-        gsap.set(content, {
-            height: 0,
-            overflow: 'hidden',
-        });
-
-        gsap.set(childEls, {
-            opacity: 0,
-        });
-
-        const tl = gsap.timeline({
-            paused: true,
-            defaults: { duration: 0.35, ease: 'power2.out' },
-            onReverseComplete: () => {
-                detail.open = false;
-            }
-        });
-        tl.set(detail, { attr: { open: '' } }, 0);
-
-        tl.to(content, {
-            height: 'auto',
-        });
-
-        tl.to(childEls, {
-            opacity: 1,
-            stagger: 0.04,
-            duration: 0.38,
-        }, '-=0.25');
-
-        let outsideHandler;
-        if (detail.dataset.autoclose === 'true') {
-            outsideHandler = (e) => {
-                if (!detail.open) return;
-                if (!content.contains(e.target) && !summary.contains(e.target)) {
-                    tl.reverse();
-                    document.removeEventListener('click', outsideHandler);
-                }
-            };
-        }
-
-        summary.addEventListener('click', (e) => {
-            e.preventDefault();
-
-            if (!detail.open) {
-                tl.invalidate().play(0);
-                if (outsideHandler) document.addEventListener('click', outsideHandler);
-            } else {
-                tl.reverse();
-            }
-        });
-
-
+    gsap.set(content, {
+      height: 0,
+      overflow: 'hidden',
     });
+
+    gsap.set(childEls, {
+      opacity: 0,
+    });
+
+    const tl = gsap.timeline({
+      paused: true,
+      defaults: { duration: 0.35, ease: 'power2.out' },
+      onReverseComplete: () => {
+        detail.open = false;
+      }
+    });
+    tl.set(detail, { attr: { open: '' } }, 0);
+
+    tl.to(content, {
+      height: 'auto',
+    });
+
+    tl.to(childEls, {
+      opacity: 1,
+      stagger: 0.04,
+      duration: 0.38,
+    }, '-=0.25');
+
+    let outsideHandler;
+    if (detail.dataset.autoclose === 'true') {
+      outsideHandler = (e) => {
+        if (!detail.open) return;
+        if (!content.contains(e.target) && !summary.contains(e.target)) {
+          tl.reverse();
+          document.removeEventListener('click', outsideHandler);
+        }
+      };
+    }
+
+    summary.addEventListener('click', (e) => {
+      e.preventDefault();
+
+      if (!detail.open) {
+        tl.invalidate().play(0);
+        if (outsideHandler) document.addEventListener('click', outsideHandler);
+      } else {
+        tl.reverse();
+      }
+    });
+
+    if (detail.dataset.openOnHover === 'true') {
+      detail.addEventListener('mouseenter', () => {
+        if (!detail.open) {
+          tl.invalidate().play(0);
+        }
+      });
+
+      detail.addEventListener('mouseleave', () => {
+        if (detail.open) {
+          tl.reverse();
+        }
+      });
+    }
+
+  });
 }
 
 /**
