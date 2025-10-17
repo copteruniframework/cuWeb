@@ -1,20 +1,25 @@
 export function initDetailsAnimate() {
     const HOVER_CLICK_DELAY = 750;
-
-    const parseOpenOnHoverConfig = (value = '') => {
-        const [enabledRaw = 'false', breakpointRaw] = value
-            .split('|')
-            .map(part => part.trim().toLowerCase());
-
-        const enabled = enabledRaw === 'true';
-        const breakpoint = breakpointRaw ? parseInt(breakpointRaw, 10) : null;
-
-        return { enabled, breakpoint };
-    };
+    const hasGSAP = typeof window !== 'undefined' && !!window.gsap;
 
     const isHoverAllowedForViewport = (breakpoint) => {
         if (breakpoint == null) return true;
         return window.innerWidth > breakpoint;
+    };
+
+    const getBool = (el, attr, defaultValue) => {
+        if (!el.dataset) return defaultValue;
+        const val = el.dataset[attr];
+        if (val === undefined) return defaultValue;
+        return val === 'true';
+    };
+
+    const getInt = (el, attr, defaultValue) => {
+        if (!el.dataset) return defaultValue;
+        const val = el.dataset[attr];
+        if (val === undefined || val === '') return defaultValue;
+        const n = parseInt(val, 10);
+        return Number.isNaN(n) ? defaultValue : n;
     };
 
     document.querySelectorAll('details').forEach(detail => {
@@ -24,7 +29,11 @@ export function initDetailsAnimate() {
 
         const childEls = [...content.children];
 
-        const hoverConfig = parseOpenOnHoverConfig(detail.dataset.openOnHover);
+        const hoverEnabled = getBool(detail, 'hover', false);
+        const hoverMinWidth = getInt(detail, 'hoverMinWidth', null);
+        const hoverDelay = getInt(detail, 'hoverDelay', HOVER_CLICK_DELAY);
+        const wantsAnimation = getBool(detail, 'animate', true);
+
         let hoverActive = false;
         let hoverClickWindowActive = false;
         let hoverClickTimeoutId;
@@ -36,95 +45,165 @@ export function initDetailsAnimate() {
             }
         };
 
-        gsap.set(content, {
-            height: 0,
-            overflow: 'hidden',
-        });
-
-        gsap.set(childEls, {
-            opacity: 0,
-        });
-
-        const tl = gsap.timeline({
-            paused: true,
-            defaults: { duration: 0.35, ease: 'power2.out' },
-            onReverseComplete: () => {
-                detail.open = false;
-            }
-        });
-        tl.set(detail, { attr: { open: '' } }, 0);
-
-        tl.to(content, {
-            height: 'auto',
-        });
-
-        tl.to(childEls, {
-            opacity: 1,
-            stagger: 0.04,
-            duration: 0.38,
-        }, '-=0.25');
+        let requestClose = () => { detail.open = false; };
 
         let outsideHandler;
-        if (detail.dataset.autoclose === 'true') {
+        if (getBool(detail, 'autoclose', false)) {
             outsideHandler = (e) => {
                 if (!detail.open) return;
-                if (!content.contains(e.target) && !summary.contains(e.target)) {
-                    tl.reverse();
+                const pathContains = e.composedPath ? (p => p.includes(content) || p.includes(summary))(e.composedPath()) : (content.contains(e.target) || summary.contains(e.target));
+                if (!pathContains) {
+                    requestClose();
                     document.removeEventListener('click', outsideHandler);
                 }
             };
         }
 
-        summary.addEventListener('click', (e) => {
-            e.preventDefault();
+        const canAnimate = hasGSAP && wantsAnimation;
+        if (canAnimate) {
+            // --- GSAP-Variante mit Animation ---
+            const gsap = window.gsap;
 
-            if (!detail.open) {
-                hoverActive = false;
-                hoverClickWindowActive = false;
-                clearHoverClickTimeout();
-                tl.invalidate().play(0);
-                if (outsideHandler) document.addEventListener('click', outsideHandler);
-            } else {
-                if (hoverActive && hoverClickWindowActive) {
+            gsap.set(content, {
+                height: 0,
+                overflow: 'hidden',
+            });
+
+            gsap.set(childEls, {
+                opacity: 0,
+            });
+
+            const tl = gsap.timeline({
+                paused: true,
+                defaults: { duration: 0.35, ease: 'power2.out' },
+                onReverseComplete: () => {
+                    detail.open = false;
+                    if (outsideHandler) document.removeEventListener('click', outsideHandler);
+                }
+            });
+
+            requestClose = () => {
+                tl.reverse();
+            };
+
+            tl.set(detail, { attr: { open: '' } }, 0);
+
+            tl.to(content, {
+                height: 'auto',
+            });
+
+            tl.to(childEls, {
+                opacity: 1,
+                stagger: 0.04,
+                duration: 0.38,
+            }, '-=0.25');
+
+            summary.addEventListener('click', (e) => {
+                e.preventDefault();
+
+                if (!detail.open) {
                     hoverActive = false;
                     hoverClickWindowActive = false;
                     clearHoverClickTimeout();
+                    tl.invalidate().play(0);
                     if (outsideHandler) document.addEventListener('click', outsideHandler);
-                    return;
-                }
+                } else {
+                    if (hoverActive && hoverClickWindowActive) {
+                        hoverActive = false;
+                        hoverClickWindowActive = false;
+                        clearHoverClickTimeout();
+                        if (outsideHandler) document.addEventListener('click', outsideHandler);
+                        return;
+                    }
 
-                hoverActive = false;
-                hoverClickWindowActive = false;
-                clearHoverClickTimeout();
-                tl.reverse();
-            }
-        });
-
-        if (hoverConfig.enabled) {
-            detail.addEventListener('mouseenter', () => {
-                if (!isHoverAllowedForViewport(hoverConfig.breakpoint)) return;
-                if (detail.open) return;
-
-                hoverActive = true;
-                hoverClickWindowActive = true;
-                clearHoverClickTimeout();
-                hoverClickTimeoutId = setTimeout(() => {
+                    hoverActive = false;
                     hoverClickWindowActive = false;
-                }, HOVER_CLICK_DELAY);
-                tl.invalidate().play(0);
-            });
-
-            detail.addEventListener('mouseleave', () => {
-                if (!hoverActive) return;
-
-                hoverActive = false;
-                hoverClickWindowActive = false;
-                clearHoverClickTimeout();
-
-                if (detail.open) {
+                    clearHoverClickTimeout();
                     tl.reverse();
                 }
             });
+
+            if (hoverEnabled) {
+                detail.addEventListener('mouseenter', () => {
+                    if (!isHoverAllowedForViewport(hoverMinWidth)) return;
+                    if (detail.open) return;
+
+                    hoverActive = true;
+                    hoverClickWindowActive = true;
+                    clearHoverClickTimeout();
+                    hoverClickTimeoutId = setTimeout(() => {
+                        hoverClickWindowActive = false;
+                    }, hoverDelay);
+                    tl.invalidate().play(0);
+                });
+
+                detail.addEventListener('mouseleave', () => {
+                    if (!hoverActive) return;
+
+                    hoverActive = false;
+                    hoverClickWindowActive = false;
+                    clearHoverClickTimeout();
+
+                    if (detail.open) {
+                        tl.reverse();
+                    }
+                });
+            }
+        } else {
+            // --- Fallback ohne GSAP: funktional ohne Animation ---
+            // Startzustand: keine forcierten Styles; wir steuern nur das `open`-Attribut
+
+            summary.addEventListener('click', (e) => {
+                e.preventDefault();
+
+                if (!detail.open) {
+                    hoverActive = false;
+                    hoverClickWindowActive = false;
+                    clearHoverClickTimeout();
+                    detail.open = true;
+                    if (outsideHandler) document.addEventListener('click', outsideHandler);
+                } else {
+                    if (hoverActive && hoverClickWindowActive) {
+                        hoverActive = false;
+                        hoverClickWindowActive = false;
+                        clearHoverClickTimeout();
+                        if (outsideHandler) document.addEventListener('click', outsideHandler);
+                        return;
+                    }
+
+                    hoverActive = false;
+                    hoverClickWindowActive = false;
+                    clearHoverClickTimeout();
+                    detail.open = false;
+                }
+            });
+
+            if (hoverEnabled) {
+                detail.addEventListener('mouseenter', () => {
+                    if (!isHoverAllowedForViewport(hoverMinWidth)) return;
+                    if (detail.open) return;
+
+                    hoverActive = true;
+                    hoverClickWindowActive = true;
+                    clearHoverClickTimeout();
+                    hoverClickTimeoutId = setTimeout(() => {
+                        hoverClickWindowActive = false;
+                    }, hoverDelay);
+                    detail.open = true;
+                });
+
+                detail.addEventListener('mouseleave', () => {
+                    if (!hoverActive) return;
+
+                    hoverActive = false;
+                    hoverClickWindowActive = false;
+                    clearHoverClickTimeout();
+
+                    if (detail.open) {
+                        detail.open = false;
+                    }
+                });
+            }
         }
     });
 }
