@@ -60,12 +60,12 @@ export function initDetailsAnimate() {
                 if (inside) return;
                 closePanel();
             };
-            document.addEventListener('click', outsideHandler);
+            document.addEventListener('pointerdown', outsideHandler, { capture: true });
         };
 
         const removeOutside = () => {
             if (!outsideHandler) return;
-            document.removeEventListener('click', outsideHandler);
+            document.removeEventListener('pointerdown', outsideHandler, { capture: true });
             outsideHandler = null;
         };
 
