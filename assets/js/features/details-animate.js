@@ -45,165 +45,110 @@ export function initDetailsAnimate() {
             }
         };
 
-        let requestClose = () => { detail.open = false; };
+        // --- Unified state and outside-click management ---
+        let outsideHandler = null;
+        const autoclose = getBool(detail, 'autoclose', false);
 
-        let outsideHandler;
-        if (getBool(detail, 'autoclose', false)) {
+        const addOutside = () => {
+            if (!autoclose || outsideHandler) return;
             outsideHandler = (e) => {
                 if (!detail.open) return;
-                const pathContains = e.composedPath ? (p => p.includes(content) || p.includes(summary))(e.composedPath()) : (content.contains(e.target) || summary.contains(e.target));
-                if (!pathContains) {
-                    requestClose();
-                    document.removeEventListener('click', outsideHandler);
-                }
+                const path = e.composedPath ? e.composedPath() : [];
+                const inside = path.length
+                    ? (path.includes(summary) || path.includes(content))
+                    : (summary.contains(e.target) || content.contains(e.target));
+                if (inside) return;
+                closePanel();
             };
-        }
+            document.addEventListener('click', outsideHandler);
+        };
 
+        const removeOutside = () => {
+            if (!outsideHandler) return;
+            document.removeEventListener('click', outsideHandler);
+            outsideHandler = null;
+        };
+
+        // --- Animation adapter (GSAP or fallback) ---
         const canAnimate = hasGSAP && wantsAnimation;
+        let tl = null;
+
+        const api = {
+            open: () => { detail.open = true; },
+            close: () => { detail.open = false; }
+        };
+
         if (canAnimate) {
-            // --- GSAP-Variante mit Animation ---
             const gsap = window.gsap;
+            gsap.set(content, { height: 0, overflow: 'hidden' });
+            gsap.set(childEls, { opacity: 0 });
 
-            gsap.set(content, {
-                height: 0,
-                overflow: 'hidden',
-            });
-
-            gsap.set(childEls, {
-                opacity: 0,
-            });
-
-            const tl = gsap.timeline({
+            tl = gsap.timeline({
                 paused: true,
                 defaults: { duration: 0.35, ease: 'power2.out' },
                 onReverseComplete: () => {
                     detail.open = false;
-                    if (outsideHandler) document.removeEventListener('click', outsideHandler);
+                    removeOutside();
                 }
             });
-
-            requestClose = () => {
-                tl.reverse();
-            };
 
             tl.set(detail, { attr: { open: '' } }, 0);
+            tl.to(content, { height: 'auto' });
+            tl.to(childEls, { opacity: 1, stagger: 0.04, duration: 0.38 }, '-=0.25');
 
-            tl.to(content, {
-                height: 'auto',
-            });
+            api.open = () => { tl.invalidate().play(0); addOutside(); };
+            api.close = () => { tl.reverse(); };
+        }
 
-            tl.to(childEls, {
-                opacity: 1,
-                stagger: 0.04,
-                duration: 0.38,
-            }, '-=0.25');
+        // --- Unified open/close helpers ---
+        function openPanel() {
+            // wichtige Änderung: Flags und Timeout NICHT zurücksetzen,
+            // damit Hover→Click-Delay (hoverClickWindowActive) erhalten bleibt
+            api.open();
+            if (!canAnimate) addOutside();
+        }
 
-            summary.addEventListener('click', (e) => {
-                e.preventDefault();
+        function closePanel() {
+            // Flags und Timeout hier ebenfalls nicht anfassen; Mouseleave/Click-Handler steuern das explizit
+            api.close();
+            if (!canAnimate) removeOutside();
+        }
 
-                if (!detail.open) {
-                    hoverActive = false;
-                    hoverClickWindowActive = false;
-                    clearHoverClickTimeout();
-                    tl.invalidate().play(0);
-                    if (outsideHandler) document.addEventListener('click', outsideHandler);
-                } else {
-                    if (hoverActive && hoverClickWindowActive) {
-                        hoverActive = false;
-                        hoverClickWindowActive = false;
-                        clearHoverClickTimeout();
-                        if (outsideHandler) document.addEventListener('click', outsideHandler);
-                        return;
-                    }
-
-                    hoverActive = false;
-                    hoverClickWindowActive = false;
-                    clearHoverClickTimeout();
-                    tl.reverse();
+        // --- Event listeners (deduplicated) ---
+        summary.addEventListener('click', (e) => {
+            e.preventDefault();
+            if (!detail.open) {
+                openPanel();
+            } else {
+                if (hoverActive && hoverClickWindowActive) {
+                    addOutside();
+                    return;
                 }
+                closePanel();
+            }
+        });
+
+        if (hoverEnabled) {
+            detail.addEventListener('mouseenter', () => {
+                if (!isHoverAllowedForViewport(hoverMinWidth)) return;
+                if (detail.open) return;
+
+                hoverActive = true;
+                hoverClickWindowActive = true;
+                clearHoverClickTimeout();
+                hoverClickTimeoutId = setTimeout(() => { hoverClickWindowActive = false; }, hoverDelay);
+                openPanel();
             });
 
-            if (hoverEnabled) {
-                detail.addEventListener('mouseenter', () => {
-                    if (!isHoverAllowedForViewport(hoverMinWidth)) return;
-                    if (detail.open) return;
+            detail.addEventListener('mouseleave', () => {
+                if (!hoverActive) return;
 
-                    hoverActive = true;
-                    hoverClickWindowActive = true;
-                    clearHoverClickTimeout();
-                    hoverClickTimeoutId = setTimeout(() => {
-                        hoverClickWindowActive = false;
-                    }, hoverDelay);
-                    tl.invalidate().play(0);
-                });
+                hoverActive = false;
+                hoverClickWindowActive = false;
+                clearHoverClickTimeout();
 
-                detail.addEventListener('mouseleave', () => {
-                    if (!hoverActive) return;
-
-                    hoverActive = false;
-                    hoverClickWindowActive = false;
-                    clearHoverClickTimeout();
-
-                    if (detail.open) {
-                        tl.reverse();
-                    }
-                });
-            }
-        } else {
-            // --- Fallback ohne GSAP: funktional ohne Animation ---
-            // Startzustand: keine forcierten Styles; wir steuern nur das `open`-Attribut
-
-            summary.addEventListener('click', (e) => {
-                e.preventDefault();
-
-                if (!detail.open) {
-                    hoverActive = false;
-                    hoverClickWindowActive = false;
-                    clearHoverClickTimeout();
-                    detail.open = true;
-                    if (outsideHandler) document.addEventListener('click', outsideHandler);
-                } else {
-                    if (hoverActive && hoverClickWindowActive) {
-                        hoverActive = false;
-                        hoverClickWindowActive = false;
-                        clearHoverClickTimeout();
-                        if (outsideHandler) document.addEventListener('click', outsideHandler);
-                        return;
-                    }
-
-                    hoverActive = false;
-                    hoverClickWindowActive = false;
-                    clearHoverClickTimeout();
-                    detail.open = false;
-                }
+                if (detail.open) closePanel();
             });
-
-            if (hoverEnabled) {
-                detail.addEventListener('mouseenter', () => {
-                    if (!isHoverAllowedForViewport(hoverMinWidth)) return;
-                    if (detail.open) return;
-
-                    hoverActive = true;
-                    hoverClickWindowActive = true;
-                    clearHoverClickTimeout();
-                    hoverClickTimeoutId = setTimeout(() => {
-                        hoverClickWindowActive = false;
-                    }, hoverDelay);
-                    detail.open = true;
-                });
-
-                detail.addEventListener('mouseleave', () => {
-                    if (!hoverActive) return;
-
-                    hoverActive = false;
-                    hoverClickWindowActive = false;
-                    clearHoverClickTimeout();
-
-                    if (detail.open) {
-                        detail.open = false;
-                    }
-                });
-            }
         }
     });
 }
