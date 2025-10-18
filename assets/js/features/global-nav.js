@@ -1,3 +1,4 @@
+import { toggleBodyOverflow } from "../utils/dom";
 /**
  * Initialisiert die globale Navigation mit responsivem Verhalten.
  * - Bei kleinen Bildschirmen (max-width: 1024px) wird das Menü in einen mobilen Stil umgewandelt.
@@ -45,10 +46,6 @@ export function initGlobalNav() {
   const placeholder = document.createComment('g_nav_menu:placeholder');
   menu.parentNode.insertBefore(placeholder, menu);
 
-  // --- simpler Scroll-Lock via Klasse auf <body> ---
-  const lockScroll = () => document.body.classList.add('u-overflow-hidden');
-  const unlockScroll = () => document.body.classList.remove('u-overflow-hidden');
-
   const mm = gsap.matchMedia();
 
   mm.add('(max-width: 1040px)', () => {
@@ -60,13 +57,13 @@ export function initGlobalNav() {
       paused: true,
       defaults: { duration: 0.30, ease: 'power2.out', immediateRender: false },
       onStart() {
-        lockScroll();
+        toggleBodyOverflow();
         moveAfterButton();
         menu.setAttribute('open', '');
         btn.setAttribute('aria-expanded', 'true');
       },
       onReverseComplete() {
-        unlockScroll();
+        toggleBodyOverflow();
         gsap.set(menu, { clearProps: 'all' });
         gsap.set(items, { clearProps: 'all' });
         menu.removeAttribute('open');
@@ -92,7 +89,7 @@ export function initGlobalNav() {
     document.addEventListener('keydown', onKey);
 
     return () => {
-      unlockScroll(); // falls noch aktiv
+      toggleBodyOverflow();
       btn.removeEventListener('click', onClick);
       document.removeEventListener('keydown', onKey);
       tl.kill();
