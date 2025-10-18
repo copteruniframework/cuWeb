@@ -39,6 +39,7 @@ import { toggleBodyOverflow } from "../utils/dom";
 export function initGlobalNav() {
   const nav = document.querySelector('.g_nav');
   const btn = document.getElementById('g_nav_btn_mobile_menu');
+  const icon = btn.querySelector('use');
   const menu = document.querySelector('.g_nav_menu');
   const items = menu.querySelectorAll('.g_nav_item');
 
@@ -61,6 +62,7 @@ export function initGlobalNav() {
         moveAfterButton();
         menu.setAttribute('open', '');
         btn.setAttribute('aria-expanded', 'true');
+        icon.setAttribute('href', '#icon-x-lg');
       },
       onReverseComplete() {
         toggleBodyOverflow();
@@ -68,11 +70,13 @@ export function initGlobalNav() {
         gsap.set(items, { clearProps: 'all' });
         menu.removeAttribute('open');
         btn.setAttribute('aria-expanded', 'false');
+        icon.setAttribute('href', '#icon-menu');
         restoreOriginal();
       }
     });
 
     tl.set(menu, { display: 'block' }, 0)
+      .fromTo(icon, {opacity: 0}, {opacity: 1}, 0)
       .fromTo(menu, { yPercent: -100, opacity: 0 }, { yPercent: 0, opacity: 1 }, 0)
       .set(items, { y: -30, opacity: 0 }, 0)
       .to(items, { y: 0, opacity: 1, stagger: 0.04, duration: 0.3 }, '-=0.2');
