@@ -1,18 +1,20 @@
 import { defineConfig } from 'vite';
 
 export default defineConfig({
-    root: '.', // Projektstamm
-    build: {
-        outDir: 'dist',
-        sourcemap: true,
-        minify: 'terser',
-        rollupOptions: {
-            input: './assets/js/main.js',
-            output: {
-                entryFileNames: 'main.bundle.js',
-            },
-            inlineDynamicImports: true,
-            manualChunks: undefined,
-        },
+  root: '.',
+  build: {
+    outDir: 'dist',
+    sourcemap: true,
+    minify: 'esbuild',               // vermeidet die Terser-Warnung
+    rollupOptions: {
+      input: './assets/js/main.js',
+      output: {
+        entryFileNames: 'main.bundle.js',
+        inlineDynamicImports: true,  // richtig platziert
+        manualChunks: undefined      // Code-Splitting aus
+      }
     },
+    // optional: auch CSS zu einer Datei bündeln
+    cssCodeSplit: false
+  }
 });
