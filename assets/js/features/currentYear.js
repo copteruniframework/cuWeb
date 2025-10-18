@@ -27,9 +27,12 @@
  * @see https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-time-element
  */
 export function initCurrentYear() {
-  const currentYear = new Date().getFullYear();
-  document.querySelectorAll('time[datetime="currentYear"]').forEach(el => {
-    el.dateTime = currentYear;
+  const currentYear = String(new Date().getFullYear());
+  const nodes = document.querySelectorAll('time[datetime="currentYear"]');
+  if (nodes.length === 0) return;
+
+  nodes.forEach(el => {
+    el.setAttribute('datetime', currentYear);
     el.textContent = currentYear;
   });
 }
