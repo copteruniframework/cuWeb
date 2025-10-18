@@ -76,7 +76,7 @@ export function initGlobalNav() {
     });
 
     tl.set(menu, { display: 'block' }, 0)
-      .fromTo(icon, {opacity: 0}, {opacity: 1}, 0)
+      .fromTo(icon, { opacity: 0 }, { opacity: 1 }, 0)
       .fromTo(menu, { yPercent: -100, opacity: 0 }, { yPercent: 0, opacity: 1 }, 0)
       .set(items, { y: -30, opacity: 0 }, 0)
       .to(items, { y: 0, opacity: 1, stagger: 0.04, duration: 0.3 }, '-=0.2');
@@ -107,5 +107,15 @@ export function initGlobalNav() {
 }
 
 export function initGlobalNav1() {
+  const toggleInput = document.getElementById('g_nav_menu_toggle');
 
+  toggleInput.addEventListener('change', () => {
+    if (toggleInput.checked) {
+      console.log('Menü geöffnet');
+      // Hier Menü öffnen oder Animation starten
+    } else {
+      console.log('Menü geschlossen');
+      // Hier Menü schließen oder Animation rückgängig machen
+    }
+  });
 }

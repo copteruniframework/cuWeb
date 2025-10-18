@@ -135,7 +135,7 @@
         display: block;
     }
 
-    .g_nav:has(#g_nav_toggle:checked) .g_nav_menu {
+    .g_nav:has(#g_nav_menu_toggle:checked) .g_nav_menu {
         display: block;
     }
 
