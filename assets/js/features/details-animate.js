@@ -93,7 +93,8 @@ export function initDetailsAnimate() {
             });
 
             tl.set(detail, { attr: { open: '' } }, 0);
-            tl.to(content, { height: 'auto' });
+            tl.to(content, { height: () => content.scrollHeight });
+            tl.set(content, { clearProps: 'height' });
             tl.to(childEls, { opacity: 1, stagger: 0.04, duration: 0.38 }, '-=0.25');
 
             api.open = () => { tl.invalidate().play(0); addOutside(); };
