@@ -3,6 +3,7 @@ import {initDetailsAnimate} from './features/details-animate.js';
 import {initCurrentYear} from './features/currentYear.js';
 import {initFABScrollShow} from './features/fab-scroll.js';
 import {initGlobalNav} from './features/global-nav.js';
+import {initGlobalNav1} from './features/global-nav.js';
 import {initTimer} from './features/timer.js';
 
 (function () {
@@ -12,7 +13,7 @@ import {initTimer} from './features/timer.js';
     initHorizontalSlider();
     initFABScrollShow();
     initTimer();
-    initGlobalNav();
+    initGlobalNav1();
   };
 
   if (document.readyState === "loading") {

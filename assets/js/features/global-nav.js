@@ -105,3 +105,7 @@ export function initGlobalNav() {
     };
   });
 }
+
+export function initGlobalNav1() {
+
+}
