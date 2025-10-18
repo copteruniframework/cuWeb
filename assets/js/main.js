@@ -11,7 +11,6 @@ import {initTimer} from './features/timer.js';
     initDetailsAnimate();
     initHorizontalSlider();
     initFABScrollShow();
-    initCUSlider();
     initTimer();
     initGlobalNav();
   };
