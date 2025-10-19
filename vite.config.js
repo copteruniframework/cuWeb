@@ -4,7 +4,7 @@ export default defineConfig({
   root: '.',
   build: {
     outDir: 'dist',
-    sourcemap: true,
+    sourcemap: false,
     minify: 'esbuild',               // vermeidet die Terser-Warnung
     rollupOptions: {
       input: './assets/js/main.js',
