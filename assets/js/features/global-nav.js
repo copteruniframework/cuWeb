@@ -123,6 +123,10 @@ export function initGlobalNavMenu() {
     icon.setAttribute('href', isOpen ? '#icon-x-lg' : '#icon-menu');
   };
 
+  const setScrollLock = (isOpen) => {
+    document.body.classList.toggle('u-overflow-hidden', isOpen);
+  };
+
   const animateMenu = (isOpen) => {
     if (!hasGSAP) return;
     gsap.to(document.querySelector('.g_nav_menu'), isOpen
@@ -148,6 +152,7 @@ export function initGlobalNavMenu() {
     setAria(isOpen);
     setIcon(isOpen);
     animateMenu(isOpen);
+    setScrollLock(isOpen);
   };
 
   if (hasGSAP) {
