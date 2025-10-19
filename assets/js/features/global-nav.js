@@ -106,7 +106,7 @@ export function initGlobalNav() {
   });
 }
 
-export function initGlobalNav1() {
+export function initGlobalNavMenu() {
   const toggleInput = document.getElementById('g_nav_menu_toggle');
   const toggleLabel = document.querySelector('label[for="g_nav_menu_toggle"]');
   const icon = toggleLabel.querySelector('use');
