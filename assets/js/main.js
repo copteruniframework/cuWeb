@@ -4,6 +4,7 @@ import {initCurrentYear} from './features/currentYear.js';
 import {initFABScrollShow} from './features/fab-scroll.js';
 import {initGlobalNav} from './features/global-nav.js';
 import {initGlobalNavMenu} from './features/global-nav.js';
+import {initGlobalNavHideOnScroll} from './features/global-nav.js';
 import {initTimer} from './features/timer.js';
 
 (function () {
@@ -14,6 +15,7 @@ import {initTimer} from './features/timer.js';
     initFABScrollShow();
     initTimer();
     initGlobalNavMenu();
+    initGlobalNavHideOnScroll();
   };
 
   if (document.readyState === "loading") {

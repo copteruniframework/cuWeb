@@ -160,3 +160,51 @@ export function initGlobalNavMenu() {
     });
   }
 }
+
+export function initGlobalNavHideOnScroll() {
+  const nav = document.querySelector(".g_nav");
+  let lastState = "shown"; // "shown" | "hidden"
+  const TOP_LOCK = 50;   // px: Bereich ab Seitenanfang, in dem Nav immer sichtbar ist
+  const SPEED_MIN = 350; // min. Geschwindigkeit, um kleine Wackler zu ignorieren
+
+  // Helfer, um Animationen zu entkoppeln und zu überschreiben
+  const showNav = () => {
+    if (lastState === "shown") return;
+    gsap.to(nav, { yPercent: 0, duration: 0.25, ease: "power2.out", overwrite: true });
+    lastState = "shown";
+  };
+  const hideNav = () => {
+    if (lastState === "hidden") return;
+    gsap.to(nav, { yPercent: -100, duration: 0.25, ease: "power2.out", overwrite: true });
+    lastState = "hidden";
+  };
+
+  // ScrollTrigger zur Richtungs-Erkennung
+  ScrollTrigger.create({
+    start: 0,                  // ab Seitenanfang aktiv
+    end: document.body.scrollHeight, // bis Seitenende
+    onUpdate(self) {
+      // Am Seitenanfang: Nav immer sichtbar. Position hat Vorrang vor Geschwindigkeit.
+      if (self.scroll() <= TOP_LOCK) {
+        showNav();
+        return;
+      }
+
+      // Kleine Scroll-Ruckler ignorieren
+      if (Math.abs(self.getVelocity()) < SPEED_MIN) return;
+
+      // self.direction: 1 = nach unten, -1 = nach oben
+      if (self.direction === 1) hideNav();
+      else showNav();
+    }
+  });
+
+  // Bei Refresh/Resizes Top-Regel erneut anwenden
+  ScrollTrigger.addEventListener('refresh', () => {
+    if (window.scrollY <= TOP_LOCK) showNav();
+  });
+
+  // Initialzustand: Am Top immer einblenden
+  if (window.scrollY <= TOP_LOCK) showNav();
+  else hideNav();
+}
