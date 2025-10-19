@@ -1,12 +1,12 @@
-document.addEventListener('DOMContentLoaded', () => {
+export function initThemeToggle() {
     'use strict';
 
     const THEMES = ['u-theme-dark', 'u-theme-light'];
     const body = document.body;
-    const toggleBtn = document.getElementById('methemetoggle');
+    const toggleBtn = document.getElementById('tgl-theme');
 
     if (!toggleBtn) {
-        console.warn('Toggle-Button mit ID "methemetoggle" nicht gefunden.');
+        console.warn('Toggle-Button mit ID "tgl-theme" nicht gefunden.');
         return;
     }
 
@@ -27,4 +27,5 @@ document.addEventListener('DOMContentLoaded', () => {
             localStorage.setItem('theme', newTheme);
         } catch (_) { }
     });
-});
+
+}

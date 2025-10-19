@@ -6,9 +6,11 @@ import {initGlobalNav} from './features/global-nav.js';
 import {initGlobalNavMenu} from './features/global-nav.js';
 import {initGlobalNavHideOnScroll} from './features/global-nav.js';
 import {initTimer} from './features/timer.js';
+import { initThemeToggle } from './features/theme-toggle.js';
 
 (function () {
   const init = () => {
+    initThemeToggle();
     initCurrentYear();
     initDetailsAnimate();
     initHorizontalSlider();
