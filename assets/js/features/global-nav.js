@@ -108,14 +108,55 @@ export function initGlobalNav() {
 
 export function initGlobalNav1() {
   const toggleInput = document.getElementById('g_nav_menu_toggle');
+  const toggleLabel = document.querySelector('label[for="g_nav_menu_toggle"]');
+  const icon = toggleLabel.querySelector('use');
 
-  toggleInput.addEventListener('change', () => {
-    if (toggleInput.checked) {
-      console.log('Menü geöffnet');
-      // Hier Menü öffnen oder Animation starten
-    } else {
-      console.log('Menü geschlossen');
-      // Hier Menü schließen oder Animation rückgängig machen
-    }
-  });
+  // Guard: GSAP
+  const hasGSAP = typeof window !== 'undefined' && !!window.gsap;
+
+  const setAria = (isOpen) => {
+    toggleLabel.setAttribute('aria-label', isOpen ? 'Menü schließen' : 'Menü öffnen');
+    toggleLabel.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+  };
+
+  const setIcon = (isOpen) => {
+    icon.setAttribute('href', isOpen ? '#icon-x-lg' : '#icon-menu');
+  };
+
+  const animateMenu = (isOpen) => {
+    if (!hasGSAP) return;
+    gsap.to(document.querySelector('.g_nav_menu'), isOpen
+      ? {
+        display: 'block',
+        height: `calc(100vh - var(--global-nav--height))`,
+        opacity: 1,
+        duration: 0.3,
+        ease: 'power2.out'
+      }
+      : {
+        display: 'none',
+        height: 0,
+        opacity: 0,
+        duration: 0.25,
+        ease: 'power2.in'
+      }
+    );
+  };
+
+  const sync = () => {
+    const isOpen = !!toggleInput.checked;
+    setAria(isOpen);
+    setIcon(isOpen);
+    animateMenu(isOpen);
+  };
+
+  if (hasGSAP) {
+    // Mark JS as active for progressive enhancement
+    document.documentElement.classList.add('js-nav');
+    gsap.matchMedia().add('(max-width: 1040px)', () => {
+      gsap.set(document.querySelector('.g_nav_menu'), { height: 0, opacity: 0, display: 'none' });
+      sync();
+      toggleInput.addEventListener('change', sync);
+    });
+  }
 }
