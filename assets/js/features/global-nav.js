@@ -179,6 +179,13 @@ export function initGlobalNavHideOnScroll() {
     lastState = "hidden";
   };
 
+  // Alle offenen <details> in der Navigation schließen
+  const closeNavDetails = () => {
+    nav.querySelectorAll('details[open]').forEach((el) => {
+      el.removeAttribute('open');
+    });
+  };
+
   // ScrollTrigger zur Richtungs-Erkennung
   ScrollTrigger.create({
     start: 0,                  // ab Seitenanfang aktiv
@@ -194,8 +201,12 @@ export function initGlobalNavHideOnScroll() {
       if (Math.abs(self.getVelocity()) < SPEED_MIN) return;
 
       // self.direction: 1 = nach unten, -1 = nach oben
-      if (self.direction === 1) hideNav();
-      else showNav();
+      if (self.direction === 1) {
+        closeNavDetails();
+        hideNav();
+      } else {
+        showNav();
+      }
     }
   });
 
