@@ -182,7 +182,7 @@ export function initGlobalNavHideOnScroll() {
   // Alle offenen <details> in der Navigation schließen
   const closeNavDetails = () => {
     nav.querySelectorAll('details[open]').forEach((el) => {
-      el.removeAttribute('open');
+      el.dispatchEvent(new CustomEvent('details:request-close', { bubbles: true }));
     });
   };
 

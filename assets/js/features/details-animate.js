@@ -115,6 +115,13 @@ export function initDetailsAnimate() {
             if (!canAnimate) removeOutside();
         }
 
+        // — External control: allow other scripts to request a graceful close
+        detail.addEventListener('details:request-close', (e) => {
+            // Prevent bubbling handlers from acting on the same signal
+            e.stopPropagation();
+            if (detail.open) closePanel();
+        });
+
         // --- Event listeners (deduplicated) ---
         summary.addEventListener('click', (e) => {
             e.preventDefault();
