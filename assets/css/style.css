@@ -118,6 +118,10 @@ input[type="file"]:focus-visible {
   line-clamp: 10;
 }
 
+.u-view-only-p > *:not(p) {
+  display: none !important;
+}
+
 .u-margin-trim > :first-child,
 .u-margin-trim
   > :not(:not(.w-condition-invisible) ~ :not(.w-condition-invisible)) {
@@ -291,6 +295,18 @@ input[type="file"]:focus-visible {
 [data-animation="ScaleInnerImage"]:focus-visible :is(img, svg) {
   transform: scale(1.03);
 }
+
+.cu-slider-content  > *,
+[data-slider="item"] {
+    scroll-snap-align: center; 
+    flex: 0 0 100%;
+}
+
+/* .cu-slider-content  > * {
+    scroll-snap-align: center; 
+    flex: 0 0 100%;
+} */
+
 
 @media (prefers-reduced-motion: reduce) {
   [data-animation="ScaleInnerImage"] :is(img, svg) {
