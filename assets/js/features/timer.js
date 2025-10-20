@@ -18,7 +18,6 @@
  * initTimer();
  */
 export function initTimer() {
-  document.addEventListener('DOMContentLoaded', () => {
     const els = document.querySelectorAll('[data-cu-counter="timer"]');
 
     els.forEach((el, i) => {
@@ -61,5 +60,4 @@ export function initTimer() {
         el.style.visibility = "visible";
       }, 1000);
     });
-  });
 }
