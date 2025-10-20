@@ -78,10 +78,7 @@ details[open] .g_nav_item,
 }
 
 .g_nav_megamenu {
-    background-color: rgba(22, 22, 23, 1);
-    ;
-    /* background-color: inherit; */
-    /* backdrop-filter: blur(10px); */
+    background-color: var(--_theme---global-nav--background-open);
     position: absolute;
     top: 100%;
     left: 0;
