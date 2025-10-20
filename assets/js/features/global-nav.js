@@ -106,6 +106,39 @@ export function initGlobalNav() {
   });
 }
 
+/**
+ * Initialisiert das mobile Navigationsmenü mit ARIA-Status, Icon-Umschaltung
+ * und optionalen GSAP-Animationen.
+ *
+ * Funktionsweise:
+ * - Liest den Zustand eines Checkbox-Toggles (#g_nav_menu_toggle).
+ * - Aktualisiert ARIA-Attribute und das Icon des zugehörigen Labels.
+ * - Sperrt/entsperrt Scrolling über eine Body-Klasse.
+ * - Animiert das Menü (.g_nav_menu) bei aktivem GSAP.
+ * - Aktiv nur im Viewport bis 1040px via gsap.matchMedia().
+ * - Progressive Enhancement: setzt die Klasse `js-nav` auf <html>.
+ *
+ * Voraussetzungen:
+ * - Optional: GSAP v3 global verfügbar (window.gsap). Ohne GSAP erfolgt nur Status-/Klassen-Update, keine Animation.
+ * - Erwartete DOM-Struktur:
+ *   <input type="checkbox" id="g_nav_menu_toggle" hidden>
+ *   <label for="g_nav_menu_toggle"><svg><use href="#icon-menu"></use></svg></label>
+ *   <nav class="g_nav"><div class="g_nav_menu">…</div></nav>
+ *
+ * Zugänglichkeit:
+ * - Setzt `aria-label` und `aria-expanded` auf dem Label passend zum Zustand.
+ *
+ * @function initGlobalNavMenu
+ * @returns {void}
+ * @example
+ * // Bei App-Start:
+ * document.addEventListener('DOMContentLoaded', () => {
+ *   initGlobalNavMenu();
+ * });
+ *
+ * @since 1.0.0
+ * @see https://gsap.com/docs/v3/
+ */
 export function initGlobalNavMenu() {
   const toggleInput = document.getElementById('g_nav_menu_toggle');
   const toggleLabel = document.querySelector('label[for="g_nav_menu_toggle"]');
@@ -166,6 +199,37 @@ export function initGlobalNavMenu() {
   }
 }
 
+/**
+ * Blendet die globale Navigation beim Scrollen nach unten aus und beim Scrollen nach oben ein.
+ *
+ * Funktionsweise:
+ * - Nutzt GSAP ScrollTrigger zur Richtungs- und Geschwindigkeits-Erkennung.
+ * - Oberhalb eines Schwellwerts (TOP_LOCK) bleibt die Navigation immer sichtbar.
+ * - Kleine Scrollbewegungen werden über SPEED_MIN gefiltert, um Flackern zu vermeiden.
+ * - Schließt offene <details>-Elemente in der Navigation beim Ausblenden.
+ *
+ * Voraussetzungen:
+ * - GSAP v3 und das ScrollTrigger-Plugin müssen global verfügbar sein (window.gsap, window.ScrollTrigger).
+ * - Erwartete DOM-Struktur: Ein Element mit Klasse `.g_nav` als Navigations-Container.
+ *
+ * Parameter/Interna:
+ * - const TOP_LOCK = 50: px-Offset ab Seitenanfang, in dem die Navigation fix sichtbar bleibt.
+ * - const SPEED_MIN = 350: minimale Scroll-Geschwindigkeit, um Ruckler zu ignorieren.
+ *
+ * Zugänglichkeit:
+ * - Verändert ausschließlich die visuelle Position der Navigation; DOM bleibt unverändert.
+ *
+ * @function initGlobalNavHideOnScroll
+ * @returns {void}
+ * @example
+ * // Bei App-Start nach DOMContentLoaded
+ * document.addEventListener('DOMContentLoaded', () => {
+ *   initGlobalNavHideOnScroll();
+ * });
+ *
+ * @since 1.0.0
+ * @see https://gsap.com/docs/v3/Plugins/ScrollTrigger/
+ */
 export function initGlobalNavHideOnScroll() {
   const nav = document.querySelector(".g_nav");
   let lastState = "shown"; // "shown" | "hidden"

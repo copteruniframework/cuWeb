@@ -1,3 +1,18 @@
+/**
+ * Wendet das gespeicherte oder bevorzugte Theme auf den Body der Seite an.
+ *
+ * Diese selbstaufrufende Funktion liest das Theme aus dem localStorage oder
+ * nutzt die Systemeinstellung. Anschließend werden alle anderen Theme-Klassen entfernt
+ * und nur das aktuelle Theme gesetzt. Zusätzlich wird das `color-scheme`-Attribut
+ * auf dem Body aktualisiert, um Browserkomponenten entsprechend zu stylen.
+ *
+ * Unterstützte Themes:
+ * - 'u-theme-dark'
+ * - 'u-theme-light'
+ *
+ * @function ThemeCollector
+ * @returns {void}
+ */
 (function () {
     'use strict';
     const THEMES = ['u-theme-dark', 'u-theme-light'];

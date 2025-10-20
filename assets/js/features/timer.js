@@ -1,3 +1,22 @@
+/**
+ * Initialisiert Countdown-Timer für alle Elemente mit data-cu-counter="timer".
+ *
+ * Funktionsweise:
+ * - Liest Startzeit im Format mm:ss aus dem Elementtext.
+ * - Berechnet das Endzeitpunkt basierend auf aktueller Zeit.
+ * - Speichert Endzeit im localStorage, um Fortführung bei Seitenreload zu ermöglichen.
+ * - Aktualisiert jede Sekunde die verbleibende Zeit.
+ * - Setzt Timer auf 00:00 und entfernt Storage-Eintrag, wenn Zeit abgelaufen.
+ *
+ * Anzeige:
+ * - Timer bleibt zunächst unsichtbar und wird nach der ersten Aktualisierung sichtbar geschaltet.
+ *
+ * @function initTimer
+ * @returns {void}
+ * @example
+ * // Timer initialisieren
+ * initTimer();
+ */
 export function initTimer() {
   document.addEventListener('DOMContentLoaded', () => {
     const els = document.querySelectorAll('[data-cu-counter="timer"]');
