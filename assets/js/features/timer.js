@@ -20,6 +20,8 @@
 export function initTimer() {
     const els = document.querySelectorAll('[data-cu-counter="timer"]');
 
+    if (!els.length) return;
+
     els.forEach((el, i) => {
       const storageKey = `cu-timer-${i}`;
       const text = el.textContent.trim();
