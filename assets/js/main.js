@@ -7,6 +7,7 @@ import {initGlobalNavMenu} from './features/global-nav.js';
 import {initGlobalNavHideOnScroll} from './features/global-nav.js';
 import {initTimer} from './features/timer.js';
 import { initThemeToggle } from './features/theme-toggle.js';
+import { cuListSort } from './features/cu-list-sort.js';
 
 (function () {
   const init = () => {
@@ -18,6 +19,7 @@ import { initThemeToggle } from './features/theme-toggle.js';
     initTimer();
     initGlobalNavMenu();
     initGlobalNavHideOnScroll();
+    cuListSort();
   };
 
   if (document.readyState === "loading") {
