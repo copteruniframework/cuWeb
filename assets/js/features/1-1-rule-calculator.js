@@ -35,25 +35,76 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let isUpdating = false; // Guard gegen rekursive "input"-Events
 
+    /**
+     * Wandelt Grad in Radiant um.
+     * @function toRad
+     * @param {number} deg - Winkel in Grad.
+     * @returns {number} Radiant.
+     */
     const toRad = deg => deg * Math.PI / 180;
+    
+    /**
+     * Wandelt Radiant in Grad um.
+     * @function toDeg
+     * @param {number} rad - Winkel in Radiant.
+     * @returns {number} Grad.
+     */
     const toDeg = rad => rad * 180 / Math.PI;
+
+    /**
+     * Prüft, ob ein Wert eine gültige Zahl ist.
+     * @function isNum
+     * @param {*} v - Zu prüfender Wert.
+     * @returns {boolean} true, wenn Zahl.
+     */
     const isNum = v => !isNaN(v);
+
+    /**
+     * Liest den numerischen Wert eines Input-Elements.
+     * @function readF
+     * @param {HTMLInputElement} el - Eingabefeld.
+     * @returns {number} Parsed float oder NaN.
+     */
     const readF = el => parseFloat(el.value);
+
+    /**
+     * Formatiert eine Zahl auf zwei Dezimalstellen.
+     * @function fmt
+     * @param {number} n - Zu formatierende Zahl.
+     * @returns {string} Formatierter String oder leer.
+     */
     const fmt = n => Number.isFinite(n) ? n.toFixed(2) : "";
 
+    /**
+     * Berechnet den Tangens eines Winkels sicher.
+     * @function safeTan
+     * @param {number} angleDeg - Winkel in Grad.
+     * @returns {number|null} Tangenswert oder null bei ungültigem Wert.
+     */
     function safeTan(angleDeg) {
         const t = Math.tan(toRad(angleDeg));
         if (!Number.isFinite(t) || Math.abs(t) < 1e-8) return null;
         return t;
     }
 
-    // Show/Hide Helper
+    /**
+     * Setzt die Sichtbarkeit eines Elements.
+     * @function setVisibility
+     * @param {HTMLElement} el - Ziel-Element.
+     * @param {boolean} show - Sichtbarkeit.
+     * @returns {void}
+     */
     function setVisibility(el, show) {
         if (!el) return;
         el.style.display = show ? "" : "none";
     }
 
-    // Prüft, ob ein Feld durch Radio-Logik "gesperrt" ist
+    /**
+     * Prüft, ob ein Eingabefeld durch die Radio-Logik gesperrt ist.
+     * @function isLocked
+     * @param {HTMLInputElement} inputEl - Zu prüfendes Eingabefeld.
+     * @returns {boolean} true, wenn gesperrt.
+     */
     function isLocked(inputEl) {
         if (!radioAngle || !radioHeight) return false;
         if (radioAngle.checked && inputEl === camAngleInput) return true; // Winkel fix
@@ -61,7 +112,17 @@ document.addEventListener('DOMContentLoaded', () => {
         return false;
     }
 
-    // >>> NEU: UI für Distance ≥ Höhe + Differenz (Höhe − Distanz) aktualisieren <<<
+    /**
+ * Aktualisiert die Benutzeroberfläche basierend auf der Einhaltung der 1:1-Regel.
+ *
+ * Funktionsweise:
+ * - Vergleicht Distanz und Höhe.
+ * - Blendet Statusmeldungen ein oder aus.
+ * - Zeigt bei Verfehlung der Regel die Differenz (Höhe − Distanz) als positiven Wert an.
+ *
+ * @function updateStatusUI
+ * @returns {void}
+ */
     function updateStatusUI() {
         const h = readF(droneHeightInput);
         const d = readF(distanceInput);
@@ -93,6 +154,19 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    /**
+ * Berechnet die fehlende Größe (Winkel, Höhe oder Distanz), wenn zwei Werte vorhanden sind.
+ *
+ * Funktionsweise:
+ * - Ermittelt, welches Feld sich geändert hat.
+ * - Nutzt trigonometrische Beziehungen zur Berechnung.
+ * - Verhindert rekursive Updates mittels Guard (isUpdating).
+ * - Aktualisiert nach jeder Berechnung die Statusanzeige.
+ *
+ * @function calculateForChange
+ * @param {HTMLInputElement|null} changedEl - Das geänderte Eingabeelement oder null bei Moduswechsel.
+ * @returns {void}
+ */
     function calculateForChange(changedEl) {
         if (isUpdating) return;
 
