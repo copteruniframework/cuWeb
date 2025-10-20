@@ -173,6 +173,34 @@
       pointer-events: auto;
   }
 
+  .u-background-color-auto {
+      background-color: var(--_theme---background--secondary);
+  }
+
+  .u-background-color-secondary .u-background-color-auto {
+      background-color: var(--_theme---background--primary);
+  }
+
+  .u-background-color-brand800 .u-background-color-auto {
+      background-color: var(--_theme---background--primary);
+  }
+
+  .g_card.u-background-color-auto {
+      background-color: color-mix(in srgb, var(--_theme---background--secondary) 50%, transparent);
+  }
+
+  .u-background-color-secondary .g_card.u-background-color-auto {
+      background-color: color-mix(in srgb, var(--_theme---background--primary) 50%, transparent);
+  }
+
+  .u-theme-light .g_card.u-background-color-auto {
+      background-color: var(--_theme---background--secondary);
+  }
+
+  .u-theme-light .u-background-color-secondary .g_card.u-background-color-auto {
+      background-color: var(--_theme---background--primary);
+  }
+
   .i-underline {
       position: relative;
   }
