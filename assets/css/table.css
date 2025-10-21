@@ -1,0 +1,43 @@
+.table-wrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  border: 1px solid hsl(0 0% 20% / 0.4);
+  border-radius: 0.5rem;
+}
+
+.cu-table {
+  /*width: max(800px, 100%); /* genug Breite für viele Spalten */
+  border-collapse: separate;
+  border-spacing: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+.cu-table caption {
+  text-align: left;
+  font-weight: 700;
+  font-size: 1.125rem;
+  padding: 0.75rem 1rem;
+}
+
+.cu-table th,
+.cu-table td {
+  padding: 0.5rem 0.625rem;
+  border: 1px solid hsl(0 0% 30% / 0.6);
+  text-align: center;      /* Zahlen rechtsbündig */
+  /*background: #0b0b0b;    /* dunkler Hintergrund wie im Bild */
+  /*color: #e9e9e9;*/
+}
+
+/* Spaltenkopf */
+.cu-table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background-color: var(--_theme---card--background);
+  text-align: center;
+}
+
+.cu-table th:first-child,
+.cu-table td:first-child {
+  max-width: 50ch;         /* Erste Spalte */
+}

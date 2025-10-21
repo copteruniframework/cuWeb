@@ -1,5 +1,6 @@
 import "../css/global-nav.css";
 import "../css/style.css";
+import "../css/table.css";
 import "../css/toggle.css";
 
 import {
