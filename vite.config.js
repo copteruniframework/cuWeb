@@ -5,16 +5,16 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     sourcemap: false,
-    minify: 'esbuild',               // vermeidet die Terser-Warnung
+    minify: 'esbuild', // vermeidet die Terser-Warnung
+    cssCodeSplit: false, // CSS in eine Datei bündeln
     rollupOptions: {
       input: './assets/js/main.js',
       output: {
-        entryFileNames: 'main.bundle.js',
-        inlineDynamicImports: true,  // richtig platziert
-        manualChunks: undefined      // Code-Splitting aus
+        entryFileNames: 'main.built.js',
+        assetFileNames: 'main.built.[ext]',
+        inlineDynamicImports: true, // muss HIER hinein
+        manualChunks: undefined     // muss HIER hinein
       }
-    },
-    // optional: auch CSS zu einer Datei bündeln
-    cssCodeSplit: false
+    }
   }
 });
