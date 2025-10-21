@@ -22,7 +22,7 @@ export function initThemeToggle() {
     'use strict';
 
     const THEMES = ['u-theme-dark', 'u-theme-light'];
-    const body = document.body;
+    const root = document.documentElement;
     const toggleBtn = document.getElementById('tgl-theme');
 
     if (!toggleBtn) {
@@ -31,14 +31,14 @@ export function initThemeToggle() {
     }
 
     toggleBtn.addEventListener('click', () => {
-        const isDark = body.classList.contains('u-theme-dark');
+        const isDark = root.classList.contains('u-theme-dark');
         const newTheme = isDark ? 'u-theme-light' : 'u-theme-dark';
 
-        body.classList.remove(...THEMES);
-        body.classList.add(newTheme);
+        root.classList.remove(...THEMES);
+        root.classList.add(newTheme);
 
         // globales Attribut setzen
-        body.setAttribute(
+        root.setAttribute(
             'color-scheme',
             newTheme === 'u-theme-dark' ? 'dark' : 'light'
         );
